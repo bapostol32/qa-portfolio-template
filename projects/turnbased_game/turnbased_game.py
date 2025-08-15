@@ -3,18 +3,36 @@
 import random
 
 # Creating Classes
+# base character created in order to be used with subclasses
+# sub classes inherit the "bones" of the base character and 
+# Fill in the functions with ther respective subclass attributes
+class Character:
+    def __init__(self, health, resource):
+        self.health = health
+        self.resource = resource
+
+    def attack(self):
+        raise NotImplementedError
+    
+    def special(self):
+        raise NotImplementedError
+    
+    def item(self):
+        raise NotImplementedError
+    
 char_warrior = {"health": 150, "rage": 0}
 char_rogue = {"health" : 100, "stamina": 100}
 char_wizard = {"health" : 75, "mana": 150}
 enemy_1 = {"health" : 100, "mana" : 100}
 
 # Warrior class
-class Warrior:
+class Warrior(Character):
     def __init__(self, health, rage):
-        self.health = health
-        self.rage = rage
+        super().__init__(health, rage) # inherits from class Character
+        self.health = 150
+        self.rage = 0
 
-    def warrior_attack(self):
+    def attack(self):
         if self.health > 1:
             print(f"You swing your blade at your opponent...")
             dmg = random.choice([20, 20, 20, 20, 30])
@@ -29,7 +47,7 @@ class Warrior:
             print("Not enough Rage.")
         return
     
-    def warrior_special(self):
+    def special(self):
         if self.health > 1 and self.rage >= 20:
             self.rage -= 20
             dmg = random.choice([50, 50, 75])
@@ -42,7 +60,7 @@ class Warrior:
             print("Not enough Rage.")
         return
     
-    def warrior_item(self):
+    def item(self):
         if self.health > 1:
             health_recovery = 40
             self.health += health_recovery
@@ -55,7 +73,7 @@ class Rogue:
         self.health = health
         self.stamina = stamina
 
-    def rogue_attack(self):
+    def attack(self):
         if self.health > 1:
             print("You swiftfully lunge towards you opponent for a strike...")
             dmg = random.choice([20, 20, 25, 25, 40])
@@ -77,7 +95,7 @@ class Rogue:
             print("Not enough Stamina.")
         return
     
-    def rogue_special(self):
+    def special(self):
         if self.health and self.stamina >= 40:
             print("You step into the shadows...and behind your opponent...")
             self.stamina -= 40
@@ -95,7 +113,7 @@ class Rogue:
         else:
             print("Not enough Stamina.")
         return
-    def rogue_item(self):
+    def item(self):
         if self.health >1:
             health_recovery = 30
             stamina_recovery = 20
@@ -112,7 +130,7 @@ class Wizard:
         self.health = health
         self.mana = mana
     
-    def wizard_attack(self):
+    def attack(self):
         if self.health > 1 and self.mana >= 10:
             self.mana -= 10
             print("You raise your staff and summon a bolt of lightning...")
@@ -129,7 +147,7 @@ class Wizard:
             print("Not enough mana.")
         return
 
-    def wizard_special(self):
+    def special(self):
         if self.health >1 and self.mana >= 75:
             print("""You raise your staff and summon a giant fireball
                    towards your opponent...""")
@@ -142,7 +160,7 @@ class Wizard:
             print("Not enough mana.")
         return
     
-    def wizard_heal(self):
+    def spell_heal(self):
         if self.health > 1 and self.mana >= 25:
             self.mana -= 25
             health_recovery = 30
@@ -155,7 +173,7 @@ class Wizard:
             print("Not enough mana.")
         return        
     
-    def wizard_item(self):
+    def item(self):
         if self.health > 1:
             mana_recovery = 50
             self.mana += mana_recovery
@@ -216,74 +234,74 @@ enemy = enemy_class()
 
 while player.health > 0 and enemy.health > 0:
     # Player's turn
-    while True:
-        print_status(player, enemy)
-        print("\n Your turn!")
-        if isinstance(player, Warrior):
-            action = input("""Choose action A/B/C:
-                        A) Attack: 20 - 30 damage. Costs 0 rage. Recover up to 20 rage.
-                        B) Special: 50 - 75 damage. Costs 20 rage.
-                        C) Item: Health potion. Recovers 40 health.
-                        """).upper()
-            if action == "A":
-                player.warrior_attack()
-                break
-            elif action == "B":
-                player.warrior_special()
-                break
-            elif action == "C":
-                player.warrior_item()
-                break
-            else:
-                print("Invalid action. Please choose A, B, or C.")
-        elif isinstance(player, Rogue):
-            action = input("""Choose action A/B/C:
-                        A) Attack: 20 - 40 damage. Costs 0 stamina. Recover up to 40 stamina.
-                        B) Special: 45 - 70 damage. Costs 40 stamina. Critical hits recover up to 40 stamina. 
-                        C) Item: Mysterious Flask. Recovers 30 health and 20 stamina. 
-                            """).upper()
-            if action == "A":
-                player.rogue_attack()
-                break
-            elif action == "B":
-                player.rogue_special()
-                break
-            elif action == "C":
-                player.rogue_item()
-                break
-            else:
-                print("Incalid action. Please choos A, B, or C.")
-        elif isinstance(player, Wizard):
-            action = input("""Choose action A/B/C:
-                        A) Attack: 10 - 30 damage. Costs 10 mana. Recover 25 - 50 mana.
-                        B) Special": 60 - 75 damage. Costs 75 mana. 
-                        C) Healing Spell: Restores 30 health. Costs 25 mana.
-                        D) Mana Potion: Recovers 50 mana.""")
-            if action == "A":
-                player.wizard_attack()
-            elif action == "B":
-                player.wizard_special()
-            elif action == "C":
-                player.wizard_heal()
-            elif action == "D":
-                player.wizard_item
+    # while True:
+    #     print_status(player, enemy)
+    #     print("\n Your turn!")
+    #     if isinstance(player, Warrior):
+    #         action = input("""Choose action A/B/C:
+    #                     A) Attack: 20 - 30 damage. Costs 0 rage. Recover up to 20 rage.
+    #                     B) Special: 50 - 75 damage. Costs 20 rage.
+    #                     C) Item: Health potion. Recovers 40 health.
+    #                     """).upper()
+    #         if action == "A":
+    #             player.warrior_attack()
+    #             break
+    #         elif action == "B":
+    #             player.warrior_special()
+    #             break
+    #         elif action == "C":
+    #             player.warrior_item()
+    #             break
+    #         else:
+    #             print("Invalid action. Please choose A, B, or C.")
+    #     elif isinstance(player, Rogue):
+    #         action = input("""Choose action A/B/C:
+    #                     A) Attack: 20 - 40 damage. Costs 0 stamina. Recover up to 40 stamina.
+    #                     B) Special: 45 - 70 damage. Costs 40 stamina. Critical hits recover up to 40 stamina. 
+    #                     C) Item: Mysterious Flask. Recovers 30 health and 20 stamina. 
+    #                         """).upper()
+    #         if action == "A":
+    #             player.rogue_attack()
+    #             break
+    #         elif action == "B":
+    #             player.rogue_special()
+    #             break
+    #         elif action == "C":
+    #             player.rogue_item()
+    #             break
+    #         else:
+    #             print("Incalid action. Please choos A, B, or C.")
+    #     elif isinstance(player, Wizard):
+    #         action = input("""Choose action A/B/C:
+    #                     A) Attack: 10 - 30 damage. Costs 10 mana. Recover 25 - 50 mana.
+    #                     B) Special": 60 - 75 damage. Costs 75 mana. 
+    #                     C) Healing Spell: Restores 30 health. Costs 25 mana.
+    #                     D) Mana Potion: Recovers 50 mana.""")
+    #         if action == "A":
+    #             player.wizard_attack()
+    #         elif action == "B":
+    #             player.wizard_special()
+    #         elif action == "C":
+    #             player.wizard_heal()
+    #         elif action == "D":
+    #             player.wizard_item
                 
 
-    # Check if enemy is defeated
-        if enemy.health <= 0:
-            print("Your opponent has been slain. You are victorious!")
-            break
+    # # Check if enemy is defeated
+    #     if enemy.health <= 0:
+    #         print("Your opponent has been slain. You are victorious!")
+    #         break
 
-        # Enemy's turn (random action)
-        print("\n Enemy's turn!")
+    #     # Enemy's turn (random action)
+    #     print("\n Enemy's turn!")
         
-        if enemy.health < 40 and not isinstance(enemy, Wizard):
-            if isinstance(enemy, Warrior):
-                enemy.warrior_item()
-                continue
+    #     if enemy.health < 40 and not isinstance(enemy, Wizard):
+    #         if isinstance(enemy, Warrior):
+    #             enemy.warrior_item()
+    #             continue
             
-            elif isinstance(enemy, Rogue):
-                enemy.rogue_item()
-                continue
+    #         elif isinstance(enemy, Rogue):
+    #             enemy.rogue_item()
+    #             continue
 
     # def enemy_turn():
