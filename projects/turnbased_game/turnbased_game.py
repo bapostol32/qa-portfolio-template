@@ -74,7 +74,7 @@ class Warrior(Character):
                     A) Attack: 20 - 30 damage. Costs 0 rage. Recover up to 20 rage.
                     B) Special: 50 - 75 damage. Costs 20 rage.
                     C) Item: Health potion. Recovers 40 health.
-                    """).upper()
+                    """).lower()
         return action
 
 # Rogue class
@@ -137,7 +137,7 @@ class Rogue(Character):
         action = input("""Choose action A/B/C:
                        A) Attack: Costs 0 Stamina. 20 - 40 damage. Recover 20 - 40 Stamina.
                        B) Special: Costs 40 Stamina. 45 - 70 damage. Critical hits restore Stamina.
-                       C) Item: Recovers 30 Health and 20 Stamina.""")
+                       C) Item: Recovers 30 Health and 20 Stamina.""").lower()
         return action
     
 # Wizard class                     
@@ -207,8 +207,8 @@ class Wizard(Character):
         action = input("""Choose action A/B/C:
                         A) Attack: 10 - 30 damage. Costs 10 mana. Recover 25 - 50 mana.
                         B) Special": 60 - 75 damage. Costs 75 mana. 
-                        C) Healing Spell: Restores 30 health. Costs 25 mana.
-                        D) Mana Potion: Recovers 50 mana.""")
+                        C) Mana Potion: Recovers 50 mana.
+                        D) Healing Spell: Restores 30 health. Costs 25 mana.""").lower()
         return action
 
 # Choosing player class
@@ -217,15 +217,15 @@ def choose_class():
 
         char_choice = input("Choose your class: Warrior, Rogue, Wizard: ").lower()
         if char_choice == "warrior":
-            player_1 = Warrior(**char_warrior)
+            player_1 = Warrior(Character)
             print("class chosen: Warrior")
             break
         elif char_choice == "rogue":
-            player_1 = Rogue(**char_rogue)
+            player_1 = Rogue(Character)
             print("class chosen: Rogue")
             break
         elif char_choice == "wizard":
-            player_1 = Wizard(**char_wizard)
+            player_1 = Wizard(Character)
             print("class chosen: Wizard")
             break
         else:
@@ -236,11 +236,11 @@ def choose_class():
 def enemy_class():
     enemy_choice = random.choice(["warrior", "rogue", "wizard"])
     if enemy_choice == "warrior":
-        enemy_1 = Warrior(**char_warrior)
+        enemy_1 = Warrior(Character)
     elif enemy_choice == "rogue":
-        enemy_1 = Rogue(**char_rogue)
+        enemy_1 = Rogue(Character)
     elif enemy_choice == "wizard":
-        enemy_1 = Wizard(**char_wizard)
+        enemy_1 = Wizard(Character)
     print(f"Enemy has chosen a class: {enemy_choice.upper()}")
     return enemy_1
 # Status Check
@@ -279,19 +279,12 @@ while player.health > 0 and enemy.health > 0:
         elif action == "C":
             player.item()
             break
+        elif action == "D":
+            player.spell_heal()
+            break
         else:
             print("Invalid action. Please choose A, B, or C.")
-        # elif isinstance(player, Wizard):
-        #     action = input("""""")
-        #     if action == "A":
-        #         player.wizard_attack()
-        #     elif action == "B":
-        #         player.wizard_special()
-        #     elif action == "C":
-        #         player.wizard_heal()
-        #     elif action == "D":
-        #         player.wizard_item
-                
+            continue
 
     # Check if enemy is defeated
         if enemy.health <= 0:
