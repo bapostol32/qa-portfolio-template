@@ -5,7 +5,7 @@ A simple terminal-based turn-based game written in Python. Built as a hands-on p
 ## 🎯 Features
 
 - Player vs Enemy turn-based combat
-- Basic health and attack logic
+- Basic health, attack, resource logic
 - Modular code with classes for future scalability
 - Improved code structure using polymorphism
 
