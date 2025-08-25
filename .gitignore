@@ -1,0 +1,30 @@
+# macOS system files
+.DS_Store
+*/.DS_Store
+
+# Python cache/bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.env/
+.venv/
+venv/
+ENV/
+
+# Logs
+*.log
+
+# Unit test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
