@@ -278,47 +278,48 @@ def gl_print_status(player, enemy):
     player.print_status()
     enemy.print_status(is_enemy=True)
 # Game Loop
-player = choose_class()
-enemy = enemy_class()
 
-while player.health > 0 and enemy.health > 0:
-    # Player's turn
-    while True:
-        
-        gl_print_status(player, enemy)
-        print("\n Your turn!")
-        action = player.action_prompt()
-        if action == "A":
-            player.attack(enemy)
-            break
-        elif action == "B":
-            player.special(enemy)
-            break
-        elif action == "C":
-            player.item()
-            break
-        elif action == "D" and isinstance(player, Wizard):
-            player.spell_heal()
-            break
-        else:
-            print("Invalid action. Please choose A, B, or C.")
-            continue
+# The following block ensures that interactive code only runs when this file is executed directly,
+# not when imported (e.g., during testing with pytest).
+if __name__ == "__main__":
+    # Start the game by choosing player and enemy classes
+    player = choose_class()
+    enemy = enemy_class()
 
-    # Check if enemy is defeated
-        if enemy.health <= 0:
-            print("Your opponent has been slain. You are victorious!")
-            break
-
-        # Enemy's turn (random action)
-        print("\n Enemy's turn!")
-        
-        if enemy.health < 40 and not isinstance(enemy, Wizard):
-            if isinstance(enemy, Warrior):
-                enemy.item()
-                continue
-            
-            elif isinstance(enemy, Rogue):
-                enemy.item()
+    # Main game loop
+    while player.health > 0 and enemy.health > 0:
+        # Player's turn
+        while True:
+            gl_print_status(player, enemy)
+            print("\n Your turn!")
+            action = player.action_prompt()
+            if action == "A":
+                player.attack(enemy)
+                break
+            elif action == "B":
+                player.special(enemy)
+                break
+            elif action == "C":
+                player.item()
+                break
+            elif action == "D" and isinstance(player, Wizard):
+                player.spell_heal()
+                break
+            else:
+                print("Invalid action. Please choose A, B, or C.")
                 continue
 
-    # def enemy_turn():
+            # Check if enemy is defeated
+            if enemy.health <= 0:
+                print("Your opponent has been slain. You are victorious!")
+                break
+
+            # Enemy's turn (random action)
+            print("\n Enemy's turn!")
+            if enemy.health < 40 and not isinstance(enemy, Wizard):
+                if isinstance(enemy, Warrior):
+                    enemy.item()
+                    continue
+                elif isinstance(enemy, Rogue):
+                    enemy.item()
+                    continue
