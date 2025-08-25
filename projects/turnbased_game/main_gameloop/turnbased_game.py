@@ -49,13 +49,13 @@ class Warrior(Character):
 
         return
     
-    def special(self):
+    def special(self, enemy):
         if self.rage >= 20:
             self.rage -= 20
             dmg = random.choice([50, 50, 75])
             if dmg == 75:
                 print("CRITICAL HIT")
-            enemy_1["health"] -= dmg
+            enemy.health -= dmg
             print(f"""You unleash your inner fury at your opponent. 
                   Enemy took {dmg}!""")
         else:
