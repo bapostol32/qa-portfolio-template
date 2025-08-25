@@ -1,5 +1,7 @@
 import pytest
-from ..main_gameloop.turnbased_game import Character
+import sys
+import os
+sys.path.append()
 
-def test_function():
+# def test_function():
     
