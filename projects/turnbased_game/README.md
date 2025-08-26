@@ -39,6 +39,10 @@ Originally built game loop using heavily nested `if` statements. Refactored usin
 ## 8/25/25
 - IDEA: passive abilty for warrior
         - after receiving damage, gain rage.
+
+## 8/25/25
+- Set up virtual environment on all devices to isolate packages
+
       
 ## 🧪 Testing
 
@@ -51,11 +55,14 @@ Originally built game loop using heavily nested `if` statements. Refactored usin
     - utilized pytest fixture to create fresh enemy class for
     - each warrior function as needed.
   - Subclass-specific actions
-- To run tests:
+  - To run tests:
   ```bash
   pytest -k test_warrior_attack()
-  ```
 
+  pytest -k test_warrior_special()
+  ```
+<!-- 8/25/25 -->
+- Used mock method within uniitest to test action prompt function
 - See `/docs/testing.md` for detailed test cases and coverage.
 
 ## 📸 Screenshots
