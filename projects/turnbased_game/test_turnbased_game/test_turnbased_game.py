@@ -1,7 +1,8 @@
 import os
 import unittest
 import pytest
-from turnbased_game.main_gameloop.turnbased_game import Warrior
+from turnbased_game.main_gameloop.turnbased_game import Warrior, Rogue, Wizard
+
 from unittest.mock import patch
 
 # testing warrior health with base class 
@@ -9,12 +10,11 @@ def test_warrior_health():
     warrior = Warrior()
     assert warrior.health == 180
 
-# create fixture for fresh enemy to warrior
-@pytest.fixture
-def enemy():
-    enemy = Warrior()
-    enemy.health = 100
-    return enemy
+# create fixture for fresh enemy to player classes
+@pytest.fixture (prams=[Warrior, Rogue, Wizard])
+def enemy(request):
+    instance = request.param()
+    return instance
 
 # PASSED 8/24/25
 def test_warrior_attack(enemy):
@@ -46,3 +46,11 @@ def test_warrior_action_prompt():
     with patch('builtins.input', return_value='a'):
         result = warrior.action_prompt()
         assert result == 'a'
+
+
+def test_rogue_attack(enemy):
+    rogue = Rogue()
+    rogue.stamina = 100
+    rogue.attack(enemy)
+    assert enemy.health in (80, 75, 60)
+    assert rogue.stamina 
