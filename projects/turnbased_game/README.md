@@ -55,12 +55,15 @@ Originally built game loop using heavily nested `if` statements. Refactored usin
     - utilized pytest fixture to create fresh enemy class for
     - each warrior function as needed.
   - Subclass-specific actions
-  - To run tests:
-  ```bash
-  pytest -k test_warrior_attack()
 
-  pytest -k test_warrior_special()
-  ```
+- test_warrior_attack()
+- when creating this test function I decided on using a fixture to assign fresh enemies(made up of the same classes as player classes) for my classes to attack
+- initally ran into a problem where I wanted to have an enemy base health of 100. I didn't account for the classes having their own starting health values and came up with failed tests due to incorrect assertions
+- implemented relative assertions to keep health consistent
+
+- pytest -k test_warrior_special()
+- 
+
 <!-- 8/25/25 -->
 - Used mock method within uniitest to test action prompt function
 - See `/docs/testing.md` for detailed test cases and coverage.

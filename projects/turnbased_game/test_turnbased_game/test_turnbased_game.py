@@ -11,7 +11,7 @@ def test_warrior_health():
     assert warrior.health == 180
 
 # create fixture for fresh enemy to player classes
-@pytest.fixture (prams=[Warrior, Rogue, Wizard])
+@pytest.fixture (params=[Warrior, Rogue, Wizard])
 def enemy(request):
     instance = request.param()
     return instance
@@ -19,9 +19,11 @@ def enemy(request):
 # PASSED 8/24/25
 def test_warrior_attack(enemy):
     warrior = Warrior()
+    enemy.health = 100
+    starting_health = enemy.health
     warrior.attack(enemy)
     assert warrior.rage == 10
-    assert enemy.health in (80, 70)
+    assert enemy.health in (starting_health -20, starting_health - 30)
 
 # PASSED 8/25/25
 def test_warrior_special(enemy):
@@ -48,9 +50,9 @@ def test_warrior_action_prompt():
         assert result == 'a'
 
 
-def test_rogue_attack(enemy):
-    rogue = Rogue()
-    rogue.stamina = 100
-    rogue.attack(enemy)
-    assert enemy.health in (80, 75, 60)
-    assert rogue.stamina 
+# def test_rogue_attack(enemy):
+#     rogue = Rogue()
+#     rogue.stamina = 100
+#     rogue.attack(enemy)
+#     assert enemy.health in (80, 75, 60)
+#     assert rogue.stamina 

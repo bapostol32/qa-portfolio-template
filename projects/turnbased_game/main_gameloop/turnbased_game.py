@@ -33,17 +33,20 @@ class Warrior(Character):
         self.rage = 0
         super().__init__(self.health, self.rage) # inherits from class Character
 
+    
+    
     def attack(self, enemy, is_enemy=False):
         if is_enemy:
             print("Your enemy swings their blade at you...")
         else:    
             print(f"You swing your blade at your opponent...")
-        dmg = random.choice([20, 20, 20, 20, 30])
+        dmg = self.get_attack_dmg()
         enemy.health -= dmg
         if dmg == 30:
             print("CRITICAL HIT")
+            rage_gain = 20
+        else:
             rage_gain = 10
-        rage_gain = 10
         self.rage += rage_gain
         print(f"Enemy takes {dmg}! Recovered {rage_gain} rage.")
 
@@ -67,6 +70,9 @@ class Warrior(Character):
         self.health += health_recovery
         print(f"You drink a potion. You recover {health_recovery} health.")
         return
+    
+    def get_attack_dmg(base=20, crit=30, crit_chance=0.2):
+        return crit if random.random() < crit_chance else base
     
     def action_prompt(self):
 
