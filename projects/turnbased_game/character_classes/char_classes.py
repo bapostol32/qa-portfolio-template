@@ -102,7 +102,7 @@ class Rogue(Character):
     def __init__(self):
         self.health = 130
         self.stamina = 100
-        self.item = 3
+        self.item_count = 3
         super().__init__(self.health, self.stamina)
 
     def attack(self, enemy):
@@ -121,6 +121,7 @@ class Rogue(Character):
                     Recovered {stamina_recovery} stamina""")
         else:
             stamina_recovery = 20
+            self.stamina += stamina_recovery
             print(f"You've done {dmg} damage to enemy health.")
         return
     
@@ -144,8 +145,8 @@ class Rogue(Character):
         return
     
     def item(self):
-        if self.item > 1:
-            self.item -= 1
+        if self.item_count > 1:
+            self.item_count -= 1
             health_recovery = 30
             stamina_recovery = 20
             self.health += health_recovery

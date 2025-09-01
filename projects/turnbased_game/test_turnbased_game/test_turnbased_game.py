@@ -1,7 +1,7 @@
 import os
 import unittest
 import pytest
-from turnbased_game.main_gameloop.turnbased_game import Warrior, Rogue, Wizard
+from turnbased_game.character_classes.char_classes import Warrior, Rogue, Wizard
 
 from unittest.mock import patch
 
@@ -50,10 +50,29 @@ def test_warrior_action_prompt():
         result = warrior.action_prompt()
         assert result == 'a'
 
+# PASSED 9/1/25
+def test_rogue_attack(enemy):
+    rogue = Rogue()
+    rogue.stamina = 100
+    rogue.attack(enemy)
+    assert enemy.health in (80, 75, 60)
+    assert rogue.stamina in (120, 125, 140,)
 
-# def test_rogue_attack(enemy):
-#     rogue = Rogue()
-#     rogue.stamina = 100
-#     rogue.attack(enemy)
-#     assert enemy.health in (80, 75, 60)
-#     assert rogue.stamina 
+# PASSED 9/1/25
+def test_rogue_special(enemy):
+    rogue = Rogue()
+    rogue.stamina = 100
+    rogue.special(enemy)
+    assert enemy.health in (55, 50, 30)
+    assert rogue.stamina in (60, 80, 100)
+
+# PASSED 9/1/25
+def test_rogue_item():
+    rogue = Rogue()
+    rogue.stamina = 100
+    rogue.health = 100
+    rogue.item_count = 3
+    rogue.item()
+    assert rogue.health == 130
+    assert rogue.stamina == 120
+    assert rogue.item_count == 2
