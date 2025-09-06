@@ -13,6 +13,7 @@ A simple CLI-based turn-based game written in Python. Built as a hands-on projec
 
 - Python 3
 - OOP principles (with polymorphism)
+- Code Wrapping
 - Terminal I/O
 
 ## 🚀 How to Run
@@ -62,12 +63,31 @@ Originally built game loop using heavily nested `if` statements. Refactored usin
 - implemented relative assertions to keep health consistent
 
 - pytest -k test_warrior_special()
-- 
 
-<!-- 8/25/25 -->
+## -- 8/25/25 -->
 - Used mock method within uniitest to test action prompt function
 - See `/docs/testing.md` for detailed test cases and coverage.
 
+## 9/3/25
+- started move to pygame
+
+## 9/4/25
+
+- Decided to implement an enemy AI "wrapper" to solve for best enemy game logic implementation
+- to be used with current classes
+- uses enemy game logic to determine action
+- uses health percentages to streamline health management
+- implemented action strings instead of using the commands themselves
+
+This was a huge breakthrough after dealing with the dilemma of how to improve enemy game logic.
+Original game logic was based off of random actions with higher chances of different actions based on player and enemy health and resources. This was deemed inefficient during testing and created an obscure player experience. Fights didn't seem challanging and didn't reward player skill
+After analyzing the problem I narrowed my available options to 2: Either have enemy versions of actions buried within each class. This felt messy and would make it hard to update enemy game logic. Option 2 was to use a "wrapper" that would call from each class and character instance. Then, I would implement logic using methods that would be called based on enemy conditions (health, resource availability). The game loop would then simply call the enemy methods and would already consider the booleans.
+E.g. def _should_use_special(self, player):
+        if not self.can_use_special():
+          return False
+        if player.health <= 50:
+          return True
+        etc...
 ## 📸 Screenshots
 
 > _Check the `/screenshots` folder for examples of code before/after refactoring._
