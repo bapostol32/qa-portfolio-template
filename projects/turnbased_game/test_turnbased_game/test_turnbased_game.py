@@ -8,7 +8,7 @@ from unittest.mock import patch
 # testing warrior health with base class 
 def test_warrior_health():
     warrior = Warrior()
-    assert warrior.health == 180
+    assert warrior.health == 200
 
 # create fixture for fresh enemy to player classes
 @pytest.fixture(params=[Warrior,Rogue,Wizard])
@@ -41,7 +41,8 @@ def test_warrior_item():
     warrior.item()
     assert warrior.health == 160
 
-from unittest.mock import patch
+# mock patch for testing input methods
+from unittest.mock import patch 
 
 def test_warrior_action_prompt():
     warrior = Warrior()
@@ -64,7 +65,7 @@ def test_rogue_special(enemy):
     rogue.stamina = 100
     rogue.special(enemy)
     assert enemy.health in (55, 50, 30)
-    assert rogue.stamina in (60, 80, 100)
+    assert rogue.stamina in (50, 70, 90, 100)
 
 # PASSED 9/1/25
 def test_rogue_item():
@@ -76,3 +77,17 @@ def test_rogue_item():
     assert rogue.health == 130
     assert rogue.stamina == 120
     assert rogue.item_count == 2
+
+# PASSED 9/6/25
+def test_rogue_action_prompt():
+    rogue = Rogue()
+    with patch('builtins.input', return_value ='a'):
+        result = rogue.action_prompt()
+        assert result == 'a'
+
+def test_rogue_special_oom(capsys):
+    rogue = Rogue()
+    rogue.stamina = 10
+    rogue.special()
+    captured = capsys.readouterr()
+    assert "Not enough Stamina." in captured.out

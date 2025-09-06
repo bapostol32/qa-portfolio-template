@@ -124,6 +124,7 @@ class Rogue(Character):
                     Recovered {stamina_recovery} stamina""")
         else:
             stamina_recovery = 20
+            self.stamina += stamina_recovery
             print(f"You've done {dmg} damage to enemy health.")
         return
     
