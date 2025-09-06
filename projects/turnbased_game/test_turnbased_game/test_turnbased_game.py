@@ -85,9 +85,11 @@ def test_rogue_action_prompt():
         result = rogue.action_prompt()
         assert result == 'a'
 
-def test_rogue_special_oom(capsys):
+# PASSED 9/6/25
+def test_rogue_special_oom(enemy, capsys):
     rogue = Rogue()
     rogue.stamina = 10
-    rogue.special()
+    rogue.special(enemy)
     captured = capsys.readouterr()
+    assert enemy.health == 100
     assert "Not enough Stamina." in captured.out
