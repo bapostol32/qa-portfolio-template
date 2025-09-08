@@ -1,11 +1,22 @@
 
 "turnbased_game"
-from turnbased_game.character_classes import Warrior, Rogue, Wizard, EnemyAI
+# Support both direct execution and module execution
+try:
+    # When run as module: python -m projects.turnbased_game.main_gameloop.main_game_loop
+    from projects.turnbased_game.character_classes.char_classes import Warrior, Rogue, Wizard, EnemyAI
+except ImportError:
+    # When run directly: python main_game_loop.py
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    from projects.turnbased_game.character_classes.char_classes import Warrior, Rogue, Wizard, EnemyAI
 import random
 import pygame
+import time
 
-pygame.init()
-screen1 = pygame.display.set_mode((800, 600))
+
+# pygame.init()
+# screen1 = pygame.display.set_mode((800, 600))
 
 
 # Choosing player class -------------------------------------------------------------
@@ -17,20 +28,20 @@ def choose_class():
                             B) Rogue
                             C) Wizard """).lower()
         if char_choice == "a":
-            player_1 = Warrior()
+            player = Warrior()
             print("class chosen: Warrior")
             break
         elif char_choice == "b":
-            player_1 = Rogue()
+            player = Rogue()
             print("class chosen: Rogue")
             break
         elif char_choice == "c":
-            player_1 = Wizard()
+            player = Wizard()
             print("class chosen: Wizard")
             break
         else:
             print("incorrect input. Please try again.")
-    return player_1
+    return player
 
 # Creating enemy -------------------------------------------------------------------------
 def enemy_class():
@@ -46,9 +57,9 @@ def enemy_class():
 # Status Check
 def gl_print_status(player, enemy):
     player.print_status()
-    enemy.print_status(is_enemy=True)
+    time.sleep(1)
+    enemy.character.print_status(is_enemy=True)
 # Game Loop
-
 # The following block ensures that interactive code only runs when this file is executed directly,
 # not when imported (e.g., during testing with pytest).
 if __name__ == "__main__":
@@ -57,36 +68,19 @@ if __name__ == "__main__":
     enemy = enemy_class()
 
     # Main game loop
-    while player.health > 0 and enemy.health > 0:
+    while player.health > 0 and enemy.character.health > 0:
         # Player's turn
-        while True:
-            gl_print_status(player, enemy)
-            print("\n Your turn!")
-            action = player.action_prompt()
-            if action == "A":
-                player.attack(enemy)
-                break
-            elif action == "B":
-                player.special(enemy)
-                break
-            elif action == "C":
-                player.item()
-                break
-            elif action == "D" and isinstance(player, Wizard):
-                player.spell_heal()
-                break
-            else:
-                print("Invalid action. Please choose A, B, or C.")
-                continue
-            
-
-    # Check if enemy is defeated
-    if enemy.health <= 0:
-        print("Your opponent has been slain. You are victorious!")
-
-    # Enemy's turn (random action)
-    print("\n Enemy's turn!")
-    if player.health > 0:
+        gl_print_status(player, enemy)
+        player.take_turn(enemy.character)
+        time.sleep(1)
+        if enemy.character.health <= 0:
+            print("Your opponent has been slain. You are victorious")
+            break
+        # Enemy's turn (random action)
+        print("\n Enemy's turn!")
         enemy.take_turn(player)
+        if player.health <= 0:
+            print("You have been slain.")
+            break
+    print("=== Game Over! ===")
 
-            
