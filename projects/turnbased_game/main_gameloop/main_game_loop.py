@@ -78,13 +78,15 @@ if __name__ == "__main__":
             else:
                 print("Invalid action. Please choose A, B, or C.")
                 continue
+            
 
-            # Check if enemy is defeated
-            if enemy.health <= 0:
-                print("Your opponent has been slain. You are victorious!")
-                break
+    # Check if enemy is defeated
+    if enemy.health <= 0:
+        print("Your opponent has been slain. You are victorious!")
 
-            # Enemy's turn (random action)
-            print("\n Enemy's turn!")
-            if player.health > 0:
-                enemy.take_turn(player)
+    # Enemy's turn (random action)
+    print("\n Enemy's turn!")
+    if player.health > 0:
+        enemy.take_turn(player)
+
+            
