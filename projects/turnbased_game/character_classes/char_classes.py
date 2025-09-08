@@ -77,6 +77,7 @@ class Character:
         print("\n --- Your Turn! ---")
         time.sleep(1)
         self.print_status()
+        enemy.print_status(is_enemy=True)
         while True:
             action_choice = self.action_prompt()
             time.sleep(1)
