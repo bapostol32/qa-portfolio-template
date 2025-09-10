@@ -93,3 +93,10 @@ def test_rogue_special_oom(enemy, capsys):
     captured = capsys.readouterr()
     assert enemy.health == 100
     assert "Not enough Stamina." in captured.out
+
+def test_rogue_print_status(capsys):
+    rogue = Rogue()
+    rogue.print_status(is_enemy=False)
+    captured = capsys.readouterr()
+    assert f"Current Health: 160 | Current Stamina: 100" in captured.out
+    

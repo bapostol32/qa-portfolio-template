@@ -24,9 +24,10 @@ def choose_class():
     while True:
 
         char_choice = input("""Choose your class A/B/C: 
-                            A) Warrior
-                            B) Rogue
-                            C) Wizard """).lower()
+                            A) Warrior : Simple. Heavy. Angry. 
+                            B) Rogue   : Fast. Deadly. Runs on stamina.
+                            C) Wizard  : Spell-casting. Ranged. Everything costs mana. Run out of mana, die.
+                            """).lower()
         if char_choice == "a":
             player = Warrior()
             print("class chosen: Warrior")
@@ -74,7 +75,7 @@ if __name__ == "__main__":
         player.take_turn(enemy.character)
         time.sleep(1)
         if enemy.character.health <= 0:
-            print("Your opponent has been slain. You are victorious")
+            print("====Your opponent has been slain. You are victorious!!====")
             break
         # Enemy's turn (random action)
         print("\n Enemy's turn!")
