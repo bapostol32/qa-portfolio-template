@@ -78,11 +78,6 @@ class Character:
         time.sleep(1)
         self.print_status()
         enemy.print_status(is_enemy=True)
-        if isinstance(self, Wizard):
-            if self.mana < 10 and self.item_count == 0:
-                self.health = 0
-                print("The wizard drops their staff and falls to the ground.")
-                return
         while True:
             action_choice = self.action_prompt()
             time.sleep(1)
@@ -120,7 +115,7 @@ class Warrior(Character):
       
         print(f"{attacker} swings their blade at {target}...")
       
-        dmg = self.get_attack_dmg(base=25, crit=40, crit_chance=0.35)
+        dmg = self.get_attack_dmg(base=25, crit=40, crit_chance=0.2)
         enemy.health -= dmg
         if dmg == 40:
             print("CRITICAL HIT")
@@ -158,7 +153,7 @@ class Warrior(Character):
             target = "You drink" if not is_enemy else "Enemy drinks"
             effect = "You recover" if not is_enemy else "Enemy recovers"
             self.item_count -= 1
-            health_recovery = 50
+            health_recovery = 60
             self.health += health_recovery
             print(f"{target} a potion. {effect} {health_recovery} health.")
             return
@@ -186,7 +181,7 @@ class Warrior(Character):
                 "name" : "Blade Strike",
                 "damage" : self.get_attack_dmg(base=25, crit=40, crit_chance=0.2, return_range=True),
                 "cost" : "0 rage",
-                "effect" : "Recover 10-20 rage",
+                "effect" : "Recover 10-20 rage when used.",
                 "available" : True,
                 "requirement" : None
             },
@@ -197,7 +192,7 @@ class Warrior(Character):
                 "cost" : "20 rage",
                 "effect" : "High damage attack",
                 "available" : self.can_use_special(),
-                "requirement" : None
+                "requirement" : "Requires 30 rage."
             },
             "item": {
                 "letter" : "C",
@@ -259,7 +254,7 @@ class Rogue(Character):
         attacker = "You swiftly lunge" if not is_enemy else "Your opponent swiftly lunges"
         target = "your opponent" if not is_enemy else "you"
         print(f"{attacker} towards {target} for a strike...")
-        dmg = self.get_attack_dmg(base=20, crit=25, super_crit=40, crit_chance=0.35, super_crit_chance=0.30)
+        dmg = self.get_attack_dmg(base=20, crit=25, super_crit=40, crit_chance=0.4, super_crit_chance=0.33)
         enemy.health -= dmg
         attacker = "You've done" if not is_enemy else "enemy does"
         target = "enemy" if not is_enemy else "your"
@@ -267,12 +262,12 @@ class Rogue(Character):
             stamina_recovery = 25
             self.stamina += stamina_recovery
             print(f"""CRITICAL HIT. {attacker} {dmg} to {target} health. 
-                    Recovered {stamina_recovery} stamina.""")
+                    Recovered {stamina_recovery}!""")
         elif dmg == 40:
             stamina_recovery = 40
             self.stamina += stamina_recovery
             print(f"""SUPER CRITICAL  {attacker} {dmg} to {target} health. 
-                    Recovered {stamina_recovery} stamina!""")
+                    Recovered {stamina_recovery} stamina""")
         else:
             stamina_recovery = 20
             self.stamina += stamina_recovery
@@ -285,7 +280,7 @@ class Rogue(Character):
             attacker = "You step" if not is_enemy else "Your opponent steps"
             target = "attack from behind your opponent" if not is_enemy else "attacks from from behind you"
             print(f"{attacker} into the shadows... and {target}...")
-            dmg = self.get_attack_dmg(base=45, crit=60, super_crit=70, crit_chance=0.4, super_crit_chance=0.35)
+            dmg = self.get_attack_dmg(base=45, crit=60, super_crit=70, crit_chance=0.4, super_crit_chance=0.3)
             enemy.health -= dmg
             target = "Enemy takes" if not is_enemy else "You take"
             if dmg == 60:
@@ -323,7 +318,7 @@ class Rogue(Character):
     def item(self):
         if self.item_count > 0:
             self.item_count -= 1
-            health_recovery = 40
+            health_recovery = 45
             stamina_recovery = 20
             self.health += health_recovery
             self.stamina += stamina_recovery
@@ -414,15 +409,13 @@ class Wizard(Character):
         self.item_count = 3
         super().__init__(self.health, self.mana)
     
-
-    
     def attack(self, enemy, is_enemy=False):
         if self.mana >= 10:
             self.mana -= 10
             attacker = "You raise your staff" if not is_enemy else "The enemy raises their staff"
             target = "Enemy receives" if not is_enemy else "You receive"
-            print(f"{attacker} and summons a bolt of lightning...")
-            dmg = self.get_attack_dmg(base=10, crit=30, crit_chance=0.4)
+            print(f"{attacker} raises their staff and summons a bolt of lightning...")
+            dmg = self.get_attack_dmg(base=10, crit=30, crit_chance=0.2)
             enemy.health -= dmg
             if dmg == 30:
                 mana_recovery = 50
@@ -460,7 +453,7 @@ class Wizard(Character):
         if self.mana >= 25:
             self.mana -= 25
             target = "you" if not is_enemy else "your enemy"
-            health_recovery = 35
+            health_recovery = 60
             self.health += health_recovery
             print(f"""A beam of light falls upon
                   {target}...
@@ -521,7 +514,7 @@ class Wizard(Character):
                 "name": "Lightning Bolt",
                 "damage": self.get_attack_dmg(base=10, crit=30, crit_chance=0.2, return_range=True),
                 "cost": "10 mana", 
-                "effect": "Recover 25-50 mana on crit. 50% crit chance.",
+                "effect": "Recover 25-50 mana on crit",
                 "available": self.mana >= 10,
                 "requirement": "Requires 10 mana"
             },
@@ -593,7 +586,7 @@ class EnemyAI:
     # to decide best action
     def choose_action(self, player):
         health_percentage = self.character.health / self._get_max_health()
-        if health_percentage < 0.20:
+        if health_percentage < 0.25:
             return self._desperate_action(player) # prioritizes survival
         elif health_percentage <0.5:
             return self._defensive_action(player) # prioritizes health while still chance for attack

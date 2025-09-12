@@ -3,20 +3,19 @@
 # Support both direct execution and module execution
 try:
     # When run as module: python -m projects.turnbased_game.main_gameloop.main_game_loop
-    from projects.turnbased_game.character_classes.char_classes import Warrior, Rogue, Wizard, EnemyAI
+    from projects.turnbased_game.character_classes import Warrior, Rogue, Wizard, EnemyAI
 except ImportError:
     # When run directly: python main_game_loop.py
     import sys
     import os
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-    from projects.turnbased_game.character_classes.char_classes import Warrior, Rogue, Wizard, EnemyAI
+    from projects.turnbased_game.character_classes import Warrior, Rogue, Wizard, EnemyAI
 import random
 import pygame
 import time
 
 
-# pygame.init()
-# screen1 = pygame.display.set_mode((800, 600))
+
 
 
 # Choosing player class -------------------------------------------------------------
@@ -26,7 +25,7 @@ def choose_class():
         char_choice = input("""Choose your class A/B/C: 
                             A) Warrior : Simple. Heavy. Angry. 
                             B) Rogue   : Fast. Deadly. Runs on stamina.
-                            C) Wizard  : Spell-casting. Ranged. Everything costs mana. Run out of mana, die.
+                            C) Wizard  : Wise. Powerful. Everything costs mana. Run out of mana, die.
                             """).lower()
         if char_choice == "a":
             player = Warrior()
@@ -85,3 +84,16 @@ if __name__ == "__main__":
             break
     print("=== Game Over! ===")
 
+# pygame.init()
+# screen1 = pygame.display.set_mode((800, 600))
+# run = True
+# while run:
+#     key = pygame.key.get_pressed()
+
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             run == False
+
+#     pygame.display.update()
+
+# pygame.quit()

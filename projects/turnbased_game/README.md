@@ -1,6 +1,6 @@
 # Turn-Based Game
 
-A simple CLI-based turn-based game written in Python. Built as a hands-on project to solidify programming fundamentals.
+A simple CLI-based turn-based game written in Python. Built as a hands-on project to solidify programming fundamentals. Currently being reworked into Pygame.
 
 ## 🎯 Features
 
@@ -14,6 +14,9 @@ A simple CLI-based turn-based game written in Python. Built as a hands-on projec
 - Python 3
 - OOP principles (with polymorphism)
 - Code Wrapping
+- Observer Patters
+- DTO
+- Command Patterns
 - Terminal I/O
 
 ## 🚀 How to Run

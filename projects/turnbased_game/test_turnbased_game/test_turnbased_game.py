@@ -1,7 +1,7 @@
 import os
 import unittest
 import pytest
-from turnbased_game.character_classes.char_classes import Warrior, Rogue, Wizard
+from turnbased_game.character_classes import Warrior, Rogue, Wizard
 
 from unittest.mock import patch
 
