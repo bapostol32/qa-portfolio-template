@@ -18,6 +18,7 @@ class Wizard(Character):
         self.mana = 180
         self.item_count = 3
         super().__init__(self.health, self.mana)
+        
     
     def attack(self, enemy, is_enemy=False):
         if self.mana >= 10:
@@ -25,7 +26,7 @@ class Wizard(Character):
             attacker = "You raise your staff" if not is_enemy else "The enemy raises their staff"
             target = "Enemy receives" if not is_enemy else "You receive"
             print(f"{attacker} raises their staff and summons a bolt of lightning...")
-            dmg = self.get_attack_dmg(base=10, crit=30, crit_chance=0.2)
+            dmg = self.get_attack_dmg(base=10, crit=30, crit_chance=0.35)
             enemy.health -= dmg
             if dmg == 30:
                 mana_recovery = 50
@@ -63,7 +64,7 @@ class Wizard(Character):
         if self.mana >= 25:
             self.mana -= 25
             target = "you" if not is_enemy else "your enemy"
-            health_recovery = 60
+            health_recovery = 45
             self.health += health_recovery
             print(f"""A beam of light falls upon
                   {target}...
@@ -100,7 +101,7 @@ class Wizard(Character):
             actions.append("attack")
         if self.can_use_special():
             actions.append("special")
-        if self.item_count > 0:
+        if self.item_count > 0 and self.mana < 180:
             actions.append("item")
         if self.can_use_heal():
             actions.append("heal")
@@ -149,7 +150,7 @@ class Wizard(Character):
             "heal": {
                 "letter": "D",
                 "name": "Healing Light", 
-                "damage": "Restores 40 health",
+                "damage": "Restores 45 health",
                 "cost": "25 mana",
                 "effect": "Divine healing magic",
                 "available": self.mana >= 25 and self.health < 120,

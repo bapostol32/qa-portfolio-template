@@ -83,17 +83,3 @@ if __name__ == "__main__":
             print("You have been slain.")
             break
     print("=== Game Over! ===")
-
-# pygame.init()
-# screen1 = pygame.display.set_mode((800, 600))
-# run = True
-# while run:
-#     key = pygame.key.get_pressed()
-
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             run == False
-
-#     pygame.display.update()
-
-# pygame.quit()

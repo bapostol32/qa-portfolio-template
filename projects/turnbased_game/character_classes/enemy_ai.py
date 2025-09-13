@@ -3,6 +3,7 @@ Enemy AI Class
 Intelligent enemy behavior system that adapts strategy based on health status
 and available resources.
 """
+import random
 import time
 from .warrior import Warrior
 from .rogue import Rogue
@@ -54,9 +55,9 @@ class EnemyAI:
         """
         # Wizard will always prioritize healing when available
         if isinstance(self.character, Wizard) and self.character.mana >= 25:
-            return "heal"
+            return random.choice(("heal", "attack")) 
         if self.character.item_count > 0:
-            return "item"
+            return random.choice(("item", "attack"))
         if self._can_use_special():
             return "special"
         return "attack"
@@ -107,12 +108,12 @@ class EnemyAI:
         # method to determine if class has healthy amount of resources
         # encourages special ability use
         if isinstance(self.character, Warrior):
-            return self.character.rage >= 60  # double the resource requirements 
+            return self.character.rage >= 45  # double the resource requirements 
                                              # are considered abundant/excess
         elif isinstance(self.character, Rogue):
-            return self.character.stamina >= 80
+            return self.character.stamina >= 75
         elif isinstance(self.character, Wizard):
-            return self.character.mana >= 150
+            return self.character.mana >= 100
         return False
     
     def execute_action(self, action, player):
@@ -123,9 +124,9 @@ class EnemyAI:
         elif action == "special":
             self.character.special(player, is_enemy=True)
         elif action == "item":
-            self.character.item()
+            self.character.item(is_enemy=True)
         elif action == "heal":
-            self.character.spell_heal()
+            self.character.spell_heal(is_enemy=True)
         else:
             self.character.attack(player, is_enemy=True)
     
@@ -134,6 +135,12 @@ class EnemyAI:
         print("\n --- Enemy Turn ---")
         time.sleep(1)  # display status
         self.character.print_status(is_enemy=True)
+        if isinstance(self, Wizard) and self.mana < 10:
+            self.health = 0
+            print("""
+                The enemy wizard drop their staff and falls to the ground.\n
+                They have run out of mana and died.
+                  """)
         time.sleep(1)  # shows enemy health
         action = self.choose_action(player) 
         self.execute_action(action, player)

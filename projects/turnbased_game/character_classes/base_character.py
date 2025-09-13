@@ -89,10 +89,11 @@ class Character:
         # Import here to avoid circular imports
         from .wizard import Wizard
         if isinstance(self, Wizard):
-            if self.mana < 10 and self.items == 0:
+            if self.mana < 10 and self.item_count == 0:
                 self.health = 0
                 print("The wizard drops their staff and falls to the ground. \n" 
                       "They have ran out of mana, and died.")
+                return
         while True:
             action_choice = self.action_prompt()
             time.sleep(1)
