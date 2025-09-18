@@ -1,3 +1,26 @@
+"""
+Legacy test file - Tests have been reorganized into modular files
+Import this file to run all tests, or run individual test files for specific functionality
+
+New test structure:
+- test_base_character.py: Base Character class tests
+- test_warrior.py: Warrior-specific tests  
+- test_rogue.py: Rogue-specific tests
+- test_wizard.py: Wizard-specific tests
+- test_enemy_ai.py: Enemy AI tests
+
+To run all tests: pytest
+To run specific tests: pytest test_warrior.py -v
+"""
+
+# Import all test modules to maintain compatibility
+from .test_base_character import *
+from .test_warrior import *
+from .test_rogue import *
+from .test_wizard import *
+from .test_enemy_ai import *
+
+# Legacy tests preserved for reference
 import os
 import unittest
 import pytest
