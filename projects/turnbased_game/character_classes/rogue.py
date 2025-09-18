@@ -37,7 +37,7 @@ class Rogue(Character):
         else:
             stamina_recovery = 20
             self.stamina += stamina_recovery
-            print(f"{attacker} {dmg} damage to {target} health.")
+            print(f"{attacker} {dmg} damage to {target} health. Recovered {stamina_recovery} stamina.")
         return
     
     def special(self, enemy, is_enemy=False):
@@ -46,13 +46,13 @@ class Rogue(Character):
             attacker = "You step" if not is_enemy else "Your opponent steps"
             target = "attack from behind your opponent" if not is_enemy else "attacks from from behind you"
             print(f"{attacker} into the shadows... and {target}...")
-            dmg = self.get_attack_dmg(base=45, crit=60, super_crit=70, crit_chance=0.4, super_crit_chance=0.3)
+            dmg = self.get_attack_dmg(base=45, crit=60, super_crit=70, crit_chance=0.4, super_crit_chance=0.31)
             enemy.health -= dmg
             target = "Enemy takes" if not is_enemy else "You take"
             if dmg == 60:
                 stamina_recovery = 20
                 self.stamina += stamina_recovery
-                print(f"CRITICAL HIT. {target} {dmg} damage.")
+                print(f"CRITICAL HIT. {target} {dmg} damage. Recovered {stamina_recovery} stamina.")
             elif dmg == 70:
                 stamina_recovery = 40
                 self.stamina += stamina_recovery
@@ -81,14 +81,15 @@ class Rogue(Character):
         available = self.get_available_actions()
         return action in available
     
-    def item(self):
+    def item(self, is_enemy=False):
         if self.item_count > 0:
             self.item_count -= 1
             health_recovery = 45
             stamina_recovery = 20
             self.health += health_recovery
             self.stamina += stamina_recovery
-            print(f"""Takes a drink from a flask...
+            target = "You" if not is_enemy else "Enemy"
+            print(f"""{target} takes a drink from a flask...
                   Recovers {health_recovery} health and 
                   {stamina_recovery} stamina.""")
         return
@@ -110,7 +111,7 @@ class Rogue(Character):
                 "letter": "B",
                 "name": "Shadow Strike",
                 "damage": self.get_attack_dmg(base=45, crit=60, super_crit=70,
-                                            crit_chance=0.4, super_crit_chance=0.3,
+                                            crit_chance=0.37, super_crit_chance=0.35,
                                             return_range=True),
                 "cost": "50 stamina",
                 "effect": "Crits restore stamina | From shadows",
@@ -120,7 +121,7 @@ class Rogue(Character):
             "item": {
                 "letter": "C",
                 "name": "Flask",
-                "damage": "Heals 30 HP + 20 stamina",
+                "damage": "Heals 45 HP + 20 stamina",
                 "cost": "1 flask",
                 "effect": f"({self.item_count} remaining)",
                 "available": self.item_count > 0,

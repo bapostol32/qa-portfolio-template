@@ -105,6 +105,8 @@ class Character:
                 print("Invalid choice. Please try again.")
         time.sleep(1)
 
+    # def status
+        
 
 # Character stat templates
 char_warrior = {"health": 150, "rage": 0}

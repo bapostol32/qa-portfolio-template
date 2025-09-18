@@ -86,6 +86,10 @@ class Warrior(Character):
             return True
         return False
     
+    # def revenge(self, enemy, is_enemy=True):
+    #     while True:
+    #         if warrior
+    
     def item(self, is_enemy=False):
         if self.item_count > 0:
             target = "You drink" if not is_enemy else "Enemy drinks"
@@ -140,7 +144,6 @@ class Warrior(Character):
                 "effect": f"({self.item_count} remaining)",
                 "available": self.item_count > 0,
                 "requirement": "Requires potion"
-        
             }
         }
     

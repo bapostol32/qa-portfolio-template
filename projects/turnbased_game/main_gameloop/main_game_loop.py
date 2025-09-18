@@ -71,7 +71,10 @@ if __name__ == "__main__":
     while player.health > 0 and enemy.character.health > 0:
         # Player's turn
         gl_print_status(player, enemy)
+        # check_status_effect()
         player.take_turn(enemy.character)
+        # if player.take_turn():
+        #     turn_counter -= 1
         time.sleep(1)
         if enemy.character.health <= 0:
             print("====Your opponent has been slain. You are victorious!!====")

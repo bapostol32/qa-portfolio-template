@@ -16,7 +16,7 @@ class Wizard(Character):
     def __init__(self):
         self.health = 120
         self.mana = 180
-        self.item_count = 3
+        self.item_count = 2
         super().__init__(self.health, self.mana)
         
     
@@ -26,12 +26,12 @@ class Wizard(Character):
             attacker = "You raise your staff" if not is_enemy else "The enemy raises their staff"
             target = "Enemy receives" if not is_enemy else "You receive"
             print(f"{attacker} raises their staff and summons a bolt of lightning...")
-            dmg = self.get_attack_dmg(base=10, crit=30, crit_chance=0.35)
+            dmg = self.get_attack_dmg(base=10, crit=35, crit_chance=0.40)
             enemy.health -= dmg
-            if dmg == 30:
+            if dmg == 35:
                 mana_recovery = 50
                 self.mana += mana_recovery
-                print(f"CRITICAL HIT. {target} takes {dmg} damage. ")
+                print(f"CRITICAL HIT. {target} takes {dmg} damage. Recover {mana_recovery} mana.")
             else:
                 mana_recovery = 25
                 self.mana += mana_recovery
@@ -49,11 +49,12 @@ class Wizard(Character):
             {attacker} staff and summons a giant fireball...
             """)
             self.mana -= 75
-            dmg = self.get_attack_dmg(base=60, crit=75, super_crit=0, crit_chance=0.25, super_crit_chance=0)
+            dmg = self.get_attack_dmg(base=60, crit=75, super_crit=0, crit_chance=0.30, super_crit_chance=0)
             enemy.health -= dmg
             if dmg == 75:
+                attacker = "Enemy takes" if not is_enemy else "You take"
                 print("CRITICAL HIT.")
-            print(f"{target} takes {dmg} damage.")
+            print(f"{target} {dmg} damage.")
         else:
             print("Not enough mana.")
         return
@@ -64,7 +65,7 @@ class Wizard(Character):
         if self.mana >= 25:
             self.mana -= 25
             target = "you" if not is_enemy else "your enemy"
-            health_recovery = 45
+            health_recovery = 50
             self.health += health_recovery
             print(f"""A beam of light falls upon
                   {target}...
@@ -73,6 +74,17 @@ class Wizard(Character):
         else:
             print("Not enough mana.")
         return        
+    # WIP for new Wizard spell
+    def spell_magic_bubble(self, enemy, is_enemy=False):
+        if self.mana >= 40:
+            self.mana -= 40
+            status_effect = True
+            turn_counter = 3
+            if status_effect and turn_counter >1:
+                turn_counter -= 1
+            else:
+                status_effect = False
+            
     
     def item(self, is_enemy=False):
         if self.item_count > 0:

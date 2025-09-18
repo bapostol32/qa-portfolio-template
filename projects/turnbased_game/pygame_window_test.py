@@ -26,6 +26,7 @@ while running:
         screen1.fill(BLACK) # draws screen with a full black screen
         player_zone = pygame.draw.rect(screen1, RED, (50, 100, 200, 300), 2)
         enemy_zone = pygame.draw.rect(screen1, BLUE, (950, 100, 200, 300), 2)
+        health_bars = pygame.draw.rect(screen1, GREEN, (650, 50, 150, 300), 2)
         pygame.display.flip() # produces draw on screen
         time_clock1.tick(60) # sets fps
 
