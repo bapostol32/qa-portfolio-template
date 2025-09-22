@@ -3,7 +3,7 @@ Rogue Character Class
 Dexterity-focused character that prioritizes critical chance and stamina recovery.
 """
 from .base_character import Character
-
+from .status_effects import StatusEffect, EffectType, EffectCategory
 
 class Rogue(Character):
     """
@@ -35,9 +35,7 @@ class Rogue(Character):
             print(f"""SUPER CRITICAL  {attacker} {dmg} to {target} health. 
                     Recovered {stamina_recovery} stamina""")
         else:
-            stamina_recovery = 20
-            self.stamina += stamina_recovery
-            print(f"{attacker} {dmg} damage to {target} health. Recovered {stamina_recovery} stamina.")
+            print(f"{attacker} {dmg} damage to {target} health.")
         return
     
     def special(self, enemy, is_enemy=False):
@@ -66,6 +64,31 @@ class Rogue(Character):
             print("Not enough Stamina.")
         return
     
+    def activate_shadow_step(self):
+        shadow_effect = StatusEffect(
+            effect_type=EffectType.SHADOW_STEP,
+            duration=4,
+            magnitude=0.30,
+            maintenance_cost=0,
+            resource_type="stamina",
+            categories=EffectCategory.DODGE  # Simple single category
+    )
+        
+    def item(self, is_enemy=False):
+        if self.item_count > 0:
+            self.item_count -= 1
+            health_recovery = 45
+            stamina_recovery = 20
+            self.health += health_recovery
+            self.stamina += stamina_recovery
+            target = "You" if not is_enemy else "Enemy"
+            print(f"""{target} takes a drink from a flask...
+                  Recovers {health_recovery} health and 
+                  {stamina_recovery} stamina.""")
+        return
+    
+# Helper/Gameloop Methods ----------------------------------------------------------------------------------    
+
     def can_use_special(self):
         return self.stamina >= 50
 
@@ -80,19 +103,6 @@ class Rogue(Character):
     def validate_action(self, action):
         available = self.get_available_actions()
         return action in available
-    
-    def item(self, is_enemy=False):
-        if self.item_count > 0:
-            self.item_count -= 1
-            health_recovery = 45
-            stamina_recovery = 20
-            self.health += health_recovery
-            self.stamina += stamina_recovery
-            target = "You" if not is_enemy else "Enemy"
-            print(f"""{target} takes a drink from a flask...
-                  Recovers {health_recovery} health and 
-                  {stamina_recovery} stamina.""")
-        return
     
     def get_action_info(self):
         return {

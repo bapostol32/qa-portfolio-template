@@ -96,69 +96,105 @@ turnbased_game/
 
 ## 📚 Development Journey
 
-### Phase 1: Foundation (August 2024)
-**Challenge**: Original implementation used heavily nested `if` statements for each character class, creating "spaghetti code" that was hard to maintain and extend.
+### Phase 1: Foundation (August 2025)
 
-**Solution**: Implemented inheritance and polymorphism with a base Character class and specialized subclasses.
+**The Problem I Inherited:**
+When I started this project, I had what I thought was a working turn-based game. But every time I wanted to add a new character class or modify existing behavior, I found myself lost in a maze of nested `if` statements. The code looked something like:
 
-#### 8/15/24 - Architecture Redesign
+*"If warrior and attack, do this... if wizard and attack, do that... if rogue and special, check stamina then..."*
+
+I realized I had "spaghetti code" where everything was tangled together, making code hard to maintain and even harder to expand.
+
+**My Learning Moment:**
+This was my first real encounter with why code architecture matters. I could have kept adding more `if` statements, but I knew that wasn't sustainable. I needed to learn about object-oriented design patterns.
+
+**The Refactor That Changed Everything:**
+
+#### 8/15/25 - Architecture Redesign
 - Created base Character class with shared attributes and methods
 - Refactored Warrior, Rogue, Wizard as subclasses inheriting from base
 - Simplified game loop to use polymorphic method calls instead of class-specific conditionals
 - Added action prompt functionality to base class for consistent player interface
 
-#### 8/16/24 - User Experience Enhancement  
+#### 8/16/25 - User Experience Enhancement  
 - Implemented class-specific action prompts so players understand each character's unique abilities
 - Added clear differentiation between attack, special, and item actions for each class
 
-### Phase 2: Advanced Features (August 2024)
-#### 8/24/24 - Professional Testing Framework
+**What I Learned:** This was my introduction to the power of object-oriented design. Instead of asking "what type of character is this?" everywhere in my code, I could just call `character.attack()` and let polymorphism handle the rest. It was like switching from manual labor to using the right tools.
+
+### Phase 2: Advanced Features (August 2025)
+
+**Discovering Professional Development Practices:**
+
+#### 8/24/25 - Professional Testing Framework
+
 - Implemented comprehensive pytest test suite with fixtures
 - Added parametrized testing for multiple character classes
 - Resolved relative assertion challenges for consistent health testing
 - Achieved thorough test coverage for all character methods and edge cases
 
-#### 8/25/24 - Enhanced Mechanics
+#### 8/25/25 - Enhanced Mechanics
+
 - **Warrior Enhancement**: Added rage gain from receiving damage (passive ability)
 - **Testing Advancement**: Implemented unittest.mock for input validation testing
 - **Environment Setup**: Established virtual environments across all development devices
 
-### Phase 3: AI & Strategy (September 2024)
-#### 9/3/24 - Pygame Integration Begins
+**My Testing Journey:** This was when I learned that "it works on my machine" isn't enough. Writing tests forced me to think about edge cases I'd never considered. What happens when a warrior runs out of rage mid-fight? What if someone enters invalid input? Testing made my code bulletproof.
+
+### Phase 3: AI & Strategy (September 2025)
+
+**Making Enemies Actually Challenging:**
+
+#### 9/3/25 - Pygame Integration Begins
+
 - Started transition from CLI to visual game interface
 - Established pygame development foundation
 
-#### 9/4/24 - Enemy AI Breakthrough
-**Problem**: Random enemy actions created poor player experience and lacked strategic challenge.
+#### 9/4/25 - Enemy AI Breakthrough
 
-**Solution**: Implemented Enemy AI "wrapper" system using health-percentage-based decision making.
+**The Problem I Faced:** My enemies were just attacking randomly, which made combat boring and unpredictable. Players couldn't develop strategies because enemy behavior was purely random.
 
-**Key Innovation**: 
+**My Solution:** I designed an Enemy AI "wrapper" system that makes intelligent decisions based on battlefield conditions.
+
+**Key Innovation:**
+
 - Created strategic AI that evaluates player/enemy health and resource states
 - Used action strings for clean separation between AI logic and character methods
 - Implemented condition-based methods (e.g., `_should_use_special()`) for intelligent decision making
 - Maintained clean architecture by keeping AI logic separate from character classes
 
-### Phase 4: Visual Development (September 2024)
-#### 9/11/24 - Pygame Foundation
+**What This Taught Me:** This was my first experience with the Strategy pattern. I learned that good AI isn't about complex algorithms - it's about making decisions that create engaging gameplay. The enemy now feels like a real opponent, not a random number generator.
+
+### Phase 4: Visual Development (September 2025)
+
+**From Text to Graphics:**
+
+#### 9/11/25 - Pygame Foundation
+
 - Established basic pygame window with proper event handling
 - Implemented frame rate control and clean exit functionality
 - Created visual layout zones for character display and UI elements
 
-#### 9/12/24 - Professional Code Organization
+#### 9/12/25 - Professional Code Organization
+
 - Organized pygame code into proper main() function structure
 - Added comprehensive error handling and cleanup procedures
 - Implemented dual exit methods (X button and ESC key)
 
-#### 9/15/24 - Visual Interface Development
+#### 9/15/25 - Visual Interface Development
+
 - **Text Rendering System**: Added font loading and text surface creation
 - **Layout Planning**: Created visual reference zones for game elements
 - **Integration Foundation**: Prepared for connecting existing game logic with visual interface
 
-#### 9/18/24 - Project Maturation
+#### 9/18/25 - Project Maturation & Advanced Systems
+
 - **Documentation Overhaul**: Comprehensive README restructuring
 - **Test Organization**: Separated test cases into modular, maintainable files
 - **Code Architecture**: Achieved professional-grade project structure with clear separation of concerns
+- **Status Effects System Design**: Architected multi-turn passive abilities using DTO and Observer patterns
+
+**The Visualization Challenge:** Moving from CLI to graphics meant rethinking everything. How do you take a text-based game and make it visual without breaking all your existing logic? This taught me about separation of concerns - keep the game logic separate from the presentation layer.
 
 ## 🎨 Pygame Integration Features
 
@@ -174,6 +210,51 @@ turnbased_game/
 - **Animation Triggers**: Built-in support for visual effects (`sword_swing`, `critical_flash`)
 - **Sound Integration**: Framework ready for audio effects
 - **Dual-Mode Design**: Maintains both CLI and visual game modes
+
+## 🔄 Advanced Systems Architecture
+
+### Challenge: Multi-Turn Status Effects (September 2025)
+
+**The Problem I Encountered:**
+After months of developing my turn-based combat system, I realized something was missing. Players could attack, use specials, and heal - but every action was instant and isolated. Combat felt too simplistic, like a series of disconnected exchanges rather than strategic warfare.
+
+I wanted to add depth: *What if a wizard could cast a protective bubble that lasted multiple turns? What if a warrior's rage could build and persist across the battle? What if a rogue could enter a heightened state where attacks sometimes missed entirely?*
+
+**The Challenge I Faced:**
+I needed to implement three specific abilities that completely changed my game's architecture:
+
+- **Wizard's Magic Bubble**: 35% damage reduction lasting 3 turns, with 25 mana maintenance each turn
+- **Warrior's Berserker Rage**: Take 25% extra damage, but that extra damage fuels rage buildup  
+- **Rogue's Shadow Step**: 30% chance to completely dodge incoming attacks
+
+The tricky part? These effects needed to persist across multiple turns, cost resources to maintain, and interact with my existing combat system without breaking everything I'd already built.
+
+**My Research and Decision Process:**
+I spent time analyzing different architectural patterns. My first instinct was to add flags to each character class, but I quickly realized this would create a maintenance nightmare. What happens when effects stack? How do I handle expiration? What about resource costs?
+
+After researching design patterns, I discovered the Observer pattern combined with Data Transfer Objects (DTOs) could solve my problems elegantly.
+
+**Technical Solution - Why DTO + Observer?**
+I chose this architecture because it solved four critical requirements:
+
+1. **StatusEffect DTO**: Encapsulates all effect properties (duration, magnitude, costs) in a clean, testable structure
+2. **StatusEffectManager**: Uses Observer pattern to track and process effects without character classes knowing the implementation details  
+3. **Non-Invasive Integration**: Hooks into my existing combat flow through damage calculation methods
+4. **Modular Extensibility**: New effect types only require new handlers, not changes to core character code
+
+**Implementation Architecture:**
+
+```text
+Effect Lifecycle: Activation → Turn Processing → Resource Management → Expiration
+Damage Pipeline: Dodge Check → Base Damage → Effect Modifications → Final Damage + Bonuses
+```
+
+**What I Learned:**
+This was my first experience with truly complex system integration. I learned that when adding major features to existing code, the architecture matters more than the implementation. The Observer pattern's loose coupling meant I could add sophisticated multi-turn mechanics without touching my carefully tested character classes.
+
+The most valuable lesson? **Plan for complexity early.** What started as "just add some flags" became a deep dive into design patterns, but the result is a system that can handle any status effect I can imagine.
+
+**Current Status:** Architecture designed and documented, ready for implementation.
 
 ## 🧪 Testing Framework
 
@@ -195,12 +276,14 @@ See `/test_turnbased_game/README.md` for detailed test documentation and individ
 ## 🚀 Future Roadmap
 
 ### Immediate Goals
+- **Status Effects Implementation**: Multi-turn passive abilities with resource management
 - **Complete Pygame Integration**: Full visual interface with character sprites
 - **Asset Integration**: Hand-drawn character art and animation systems
 - **Interactive Combat**: Click-based actions and visual feedback
 - **Sound System**: Audio effects for attacks, spells, and criticals
 
 ### Advanced Features
+- **Status Effect Combinations**: Stackable and conflicting effect interactions
 - **Multiple Enemy Types**: Expand beyond single-enemy encounters
 - **Leveling System**: Character progression and skill trees
 - **Equipment System**: Weapons and armor with stat modifications
@@ -210,9 +293,11 @@ See `/test_turnbased_game/README.md` for detailed test documentation and individ
 
 This project demonstrates mastery of:
 - **Object-Oriented Design**: Inheritance, polymorphism, encapsulation
-- **Game Development**: State management, event handling, rendering loops
+- **Design Patterns**: Observer pattern, DTO pattern, Strategy pattern implementation
+- **Game Development**: State management, event handling, rendering loops, multi-turn effect systems
 - **Software Testing**: Test-driven development with comprehensive coverage
 - **Code Architecture**: Clean separation of concerns and modular design
+- **System Integration**: Complex feature addition without breaking existing functionality
 - **Version Control**: Git workflow with iterative development
 - **Documentation**: Professional README and code commenting
 

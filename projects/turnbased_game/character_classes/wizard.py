@@ -4,8 +4,8 @@ Glass cannon character with high damage output, low health.
 All abilities cost resource (mana). Item (mana potion) used to recover mana.
 """
 from .base_character import Character
-
-
+from typing import Dict, Any
+from .status_effects import StatusEffect, EffectType, EffectCategory
 class Wizard(Character):
     """
     Glass cannon character
@@ -75,16 +75,34 @@ class Wizard(Character):
             print("Not enough mana.")
         return        
     # WIP for new Wizard spell
-    def spell_magic_bubble(self, enemy, is_enemy=False):
-        if self.mana >= 40:
-            self.mana -= 40
-            status_effect = True
-            turn_counter = 3
-            if status_effect and turn_counter >1:
-                turn_counter -= 1
-            else:
-                status_effect = False
-            
+    def cast_magic_bubble(self) -> Dict[str, Any]:
+        """Cast protective magic bubble"""
+        mana_cost = 50
+        if self.mana < mana_cost:
+            return {'success': False, 'reason': 'insufficient_mana'}
+        
+        self.mana -= mana_cost
+        
+        bubble_effect = StatusEffect(
+            effect_type=EffectType.MAGIC_BUBBLE,
+            duration=3,
+            magnitude=0.35,  # 35% damage reduction
+            maintenance_cost=25,
+            resource_type="mana",
+            categories=EffectCategory.DAMAGE_REDUCTION | EffectCategory.MANA_DRAIN # "|" operator to 
+                                                                                   # combine two enum members into a bitwise 
+                                                                                   # OR value that represents both categories at once
+        )                                                                          # effect can be checked for both categories
+        
+        self.status_effects.add_effect(bubble_effect) # Adds effect to status_effect_manager
+        
+        return { # Returns success dictionary with display updates
+            'success': True,
+            'effect_applied': 'magic_bubble',
+            'duration': 3,
+            'mana_used': mana_cost
+        } 
+                
     
     def item(self, is_enemy=False):
         if self.item_count > 0:
@@ -98,6 +116,7 @@ class Wizard(Character):
             print("Out of potions.")       
         return 
     
+# Helper/Gameloop methods --------------------------------------------------------------------------
     def can_use_special(self):
         return self.mana >= 75
 

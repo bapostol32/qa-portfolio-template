@@ -86,10 +86,16 @@ class Warrior(Character):
             return True
         return False
     
-    # def revenge(self, enemy, is_enemy=True):
-    #     while True:
-    #         if warrior
-    
+    def enter_berserker_rage(self):
+        berserker_effect = StatusEffect(
+            effect_type=EffectType.BERSERKER_RAGE,
+            duration=5,
+            magnitude=0.25,
+            maintenance_cost=0,
+            resource_type="rage",
+            categories=EffectCategory.DAMAGE_AMPLIFICATION | EffectCategory.RAGE_CONVERSION
+        )
+
     def item(self, is_enemy=False):
         if self.item_count > 0:
             target = "You drink" if not is_enemy else "Enemy drinks"
@@ -99,7 +105,9 @@ class Warrior(Character):
             self.health += health_recovery
             print(f"{target} a potion. {effect} {health_recovery} health.")
             return
-    
+        
+# Helper/Gameloop Methods ----------------------------------------------------------------------------------       
+
     def get_available_actions(self):
         """
         Returns list of actions player can perform based on 
