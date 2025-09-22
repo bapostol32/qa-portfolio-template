@@ -15,10 +15,14 @@ class Wizard(Character):
     """
     def __init__(self):
         self.health = 120
+        self.max_health = 120  # Maximum health limit
         self.mana = 180
-        self.item_count = 2
+        self.max_mana = 180    # Maximum mana limit
+        self.item_count = 3
         super().__init__(self.health, self.mana)
         
+        from .status_effect_manager import StatusEffectManager
+        self.status_effects = StatusEffectManager()
     
     def attack(self, enemy, is_enemy=False):
         if self.mana >= 10:
@@ -26,16 +30,34 @@ class Wizard(Character):
             attacker = "You raise your staff" if not is_enemy else "The enemy raises their staff"
             target = "Enemy receives" if not is_enemy else "You receive"
             print(f"{attacker} raises their staff and summons a bolt of lightning...")
+            
+            # Check for dodge first
+            if hasattr(enemy, 'status_effects') and enemy.status_effects.apply_dodge_check(enemy):
+                print("💨 Attack dodged!")
+                return
+            
             dmg = self.get_attack_dmg(base=10, crit=35, crit_chance=0.40)
-            enemy.health -= dmg
-            if dmg == 35:
+            target = "You" if not is_enemy else "Enemy"
+            # Apply status effect damage modifications
+            if hasattr(enemy, 'status_effects'):
+                final_damage, narrative_effects = enemy.status_effects.apply_damage_modification(enemy, dmg, is_enemy)
+                # Show narrative effects before damage
+                for effect_message in narrative_effects:
+                    print(effect_message)
+            
+            else:
+                final_damage = dmg
+                
+            enemy.health -= final_damage
+            if final_damage == 35:
                 mana_recovery = 50
                 self.mana += mana_recovery
-                print(f"CRITICAL HIT. {target} takes {dmg} damage. Recover {mana_recovery} mana.")
+                
+                print(f"CRITICAL HIT. {target} takes {final_damage} damage. Recover {mana_recovery} mana.")
             else:
                 mana_recovery = 25
                 self.mana += mana_recovery
-                print(f"{target} takes {dmg} damage.")
+                print(f"{target} takes {final_damage} damage.")
         else:
             print("Not enough mana.")
         return
@@ -49,12 +71,28 @@ class Wizard(Character):
             {attacker} staff and summons a giant fireball...
             """)
             self.mana -= 75
+            
+            # Check for dodge first
+            if hasattr(enemy, 'status_effects') and enemy.status_effects.apply_dodge_check(enemy):
+                print("💨 Attack dodged!")
+                return
+            
             dmg = self.get_attack_dmg(base=60, crit=75, super_crit=0, crit_chance=0.30, super_crit_chance=0)
-            enemy.health -= dmg
-            if dmg == 75:
+            
+            # Apply status effect damage modifications
+            if hasattr(enemy, 'status_effects'):
+                final_damage, narrative_effects = enemy.status_effects.apply_damage_modification(enemy, dmg, is_enemy)
+                # Show narrative effects before damage
+                for effect_message in narrative_effects:
+                    print(effect_message)
+            else:
+                final_damage = dmg
+                
+            enemy.health -= final_damage
+            if final_damage == 75:
                 attacker = "Enemy takes" if not is_enemy else "You take"
                 print("CRITICAL HIT.")
-            print(f"{target} {dmg} damage.")
+            print(f"{target} {final_damage} damage.")
         else:
             print("Not enough mana.")
         return
@@ -63,19 +101,26 @@ class Wizard(Character):
         # main way for wizard to heal
         # still costs mana
         if self.mana >= 25:
+            if self.health >= self.max_health:
+                target = "You" if not is_enemy else "Your enemy"
+                print(f"{target} already have full health. The spell would be wasted.")
+                return
+                
             self.mana -= 25
             target = "you" if not is_enemy else "your enemy"
             health_recovery = 50
-            self.health += health_recovery
+            # Cap health at maximum
+            actual_recovery = min(health_recovery, self.max_health - self.health)
+            self.health = min(self.health + health_recovery, self.max_health)
             print(f"""A beam of light falls upon
                   {target}...
-                  Recover {health_recovery} health."""
+                  Recover {actual_recovery} health."""
                   )
         else:
             print("Not enough mana.")
         return        
-    # WIP for new Wizard spell
-    def cast_magic_bubble(self) -> Dict[str, Any]:
+    # STATUS EFFECT
+    def cast_magic_bubble(self) -> Dict[str, Any]: 
         """Cast protective magic bubble"""
         mana_cost = 50
         if self.mana < mana_cost:
@@ -106,12 +151,19 @@ class Wizard(Character):
     
     def item(self, is_enemy=False):
         if self.item_count > 0:
+            if self.mana >= self.max_mana:
+                target = "You" if not is_enemy else "Your enemy"
+                print(f"{target} already have full mana. The potion would be wasted.")
+                return
+            
             self.item_count -= 1
             target = "You uncork" if not is_enemy else "Your enemy uncorks"
             mana_recovery = 50
-            self.mana += mana_recovery
+            # Cap mana at maximum
+            actual_recovery = min(mana_recovery, self.max_mana - self.mana)
+            self.mana = min(self.mana + mana_recovery, self.max_mana)
             print(f"""{target} a vial and take a sip...
-                  Recover {mana_recovery} mana. """)
+                  Recover {actual_recovery} mana. """)
         else:
             print("Out of potions.")       
         return 
@@ -124,7 +176,7 @@ class Wizard(Character):
         return self.mana >= 10
 
     def can_use_heal(self):
-        return self.mana >= 25 and self.health < 120
+        return self.mana >= 25 and self.health < self.max_health
 
     def get_available_actions(self):
         actions = []
@@ -132,10 +184,12 @@ class Wizard(Character):
             actions.append("attack")
         if self.can_use_special():
             actions.append("special")
-        if self.item_count > 0 and self.mana < 180:
+        if self.item_count > 0 and self.mana < self.max_mana:
             actions.append("item")
         if self.can_use_heal():
             actions.append("heal")
+        if self.mana >= 50 and not self.has_status_effect(EffectType.MAGIC_BUBBLE):
+            actions.append("magic_bubble")
         return actions
 
     def validate_action(self, action):
@@ -144,9 +198,11 @@ class Wizard(Character):
         elif action == "special": 
             return self.can_use_special()
         elif action == "item":
-            return self.item_count > 0
+            return self.item_count > 0 and self.mana < self.max_mana
         elif action == "heal":
             return self.can_use_heal()
+        elif action == "magic_bubble":
+            return self.mana >= 50 and not self.has_status_effect(EffectType.MAGIC_BUBBLE)
         return False
     
     def get_action_info(self):
@@ -175,17 +231,26 @@ class Wizard(Character):
                 "damage": "Restores 50 mana",
                 "cost": "1 potion",
                 "effect": f"({self.item_count} remaining)",
-                "available": self.item_count > 0,
-                "requirement": "Requires potion"
+                "available": self.item_count > 0 and self.mana < self.max_mana,
+                "requirement": "Requires potion & missing mana"
             },
             "heal": {
                 "letter": "D",
                 "name": "Healing Light", 
-                "damage": "Restores 45 health",
+                "damage": "Restores 50 health",
                 "cost": "25 mana",
                 "effect": "Divine healing magic",
-                "available": self.mana >= 25 and self.health < 120,
+                "available": self.mana >= 25 and self.health < self.max_health,
                 "requirement": "Requires 25 mana & missing health"
+            },
+            "magic_bubble": {
+                "letter": "E",
+                "name": "Magic Bubble",
+                "damage": "35% damage reduction",
+                "cost": "50 mana + 25/turn",
+                "effect": "Protective barrier for 3 turns",
+                "available": self.mana >= 50 and not self.has_status_effect(EffectType.MAGIC_BUBBLE),
+                "requirement": "Requires 50 mana & no active bubble"
             }
         }
 
@@ -213,7 +278,7 @@ class Wizard(Character):
                 prompt += f"   └─ {info['requirement']}\n"
             prompt += "\n"
         
-        prompt += "Enter choice (A/B/C/D): "
+        prompt += "Enter choice (A/B/C/D/E): "
         return input(prompt).lower()
 
     def print_status(self, is_enemy=False):
@@ -221,3 +286,4 @@ class Wizard(Character):
             print(f"Enemy Health: {self.health} | Enemy Mana: {self.mana}")
         else:
             print(f"Current Health: {self.health} | Current Mana: {self.mana}")
+        self.print_active_status_effects(is_enemy)

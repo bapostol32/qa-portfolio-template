@@ -6,7 +6,8 @@ fill in the functions with their respective subclass attributes.
 """
 import random
 import time
-
+from typing import Dict, Any
+from .status_effects import StatusEffect, EffectType, EffectCategory
 class Character:
     def __init__(self, health, resource):
         self.health = health
@@ -65,6 +66,17 @@ class Character:
             from .wizard import Wizard
             if isinstance(self, Wizard):
                 return "heal"
+        elif action_name == "e":
+            # Status effect abilities
+            from .wizard import Wizard
+            from .warrior import Warrior
+            from .rogue import Rogue
+            if isinstance(self, Wizard):
+                return "magic_bubble"
+            elif isinstance(self, Warrior):
+                return "berserker_rage"
+            elif isinstance(self, Rogue):
+                return "shadow_step"
         else:
             return None
         
@@ -77,8 +89,26 @@ class Character:
             self.item()
         elif action_name == "heal":
             self.spell_heal()
+        elif action_name == "magic_bubble":
+            result = self.cast_magic_bubble()
+            if result['success']:
+                print("You weave a protective barrier around yourself!")
+            else:
+                print(f"Failed to cast Magic Bubble: {result.get('reason', 'Unknown error')}")
+        elif action_name == "berserker_rage":
+            result = self.enter_berserker_rage()
+            if result['success']:
+                print("You unleash your inner fury and enter a berserker rage!")
+            else:
+                print(f"Failed to enter Berserker Rage: {result.get('reason', 'Unknown error')}")
+        elif action_name == "shadow_step":
+            result = self.activate_shadow_step()
+            if result['success']:
+                print("You meld with the shadows, becoming harder to hit!")
+            else:
+                print(f"Failed to activate Shadow Step: {result.get('reason', 'Unknown error')}")
         else:
-            self.attack()
+            self.attack(enemy)
 
     def take_turn(self, enemy):
         print("\n --- Your Turn! ---")
@@ -105,7 +135,47 @@ class Character:
                 print("Invalid choice. Please try again.")
         time.sleep(1)
 
-    # def status
+    def process_turn_start(self) -> Dict[str, Any]:
+        """Process status effects at turn start"""
+        if hasattr(self, 'status_effects'):
+            return self.status_effects.process_turn_effects(self)
+        return {}
+
+    def has_status_effect(self, effect_type) -> bool:
+        """Check if character has specific status effect"""
+        if hasattr(self, 'status_effects'):
+            if hasattr(self.status_effects, 'has_effect'):
+                return self.status_effects.has_effect(effect_type)
+            else:
+                # Fallback if method doesn't exist - check manually
+                return any(effect.effect_type == effect_type for effect in self.status_effects.active_effects)
+        return False
+
+    def print_active_status_effects(self, is_enemy=False):
+        """Display active status effects"""
+        if not hasattr(self, 'status_effects') or not self.status_effects.active_effects:
+            return  # No status effects to display
+        
+        prefix = "Enemy" if is_enemy else "You"
+        effects_info = []
+        
+        for effect in self.status_effects.active_effects:
+            effect_name = effect.effect_type.value.replace('_', ' ').title()
+            duration = effect.duration
+            
+            # Add specific effect descriptions
+            if effect.effect_type.value == "magic_bubble":
+                effects_info.append(f"🔮 {effect_name} ({duration} turns) - 35% damage reduction")
+            elif effect.effect_type.value == "berserker_rage":
+                effects_info.append(f"⚔️ {effect_name} ({duration} turns) - +25% damage taken → rage")
+            elif effect.effect_type.value == "shadow_step":
+                effects_info.append(f"🌫️ {effect_name} ({duration} turns) - 30% dodge chance")
+            else:
+                effects_info.append(f"✨ {effect_name} ({duration} turns)")
+        
+        if effects_info:
+            effect_text = "has" if is_enemy else "have"
+            print(f"{prefix} {effect_text} active effects: {' | '.join(effects_info)}")
         
 
 # Character stat templates

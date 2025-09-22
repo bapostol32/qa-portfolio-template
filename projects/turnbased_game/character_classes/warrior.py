@@ -3,8 +3,8 @@ Warrior Character Class
 Heavy tank character with largest health pool and rage-based abilities.
 """
 from .base_character import Character
-
-
+from .status_effects import StatusEffect, EffectType, EffectCategory
+from typing import Dict, Any
 class Warrior(Character):
     """
     Heavy tank character
@@ -13,20 +13,36 @@ class Warrior(Character):
     """
     def __init__(self):
         self.health = 200
+        self.max_health = 200  # Maximum health limit
         self.rage = 0
         self.item_count = 2
         super().__init__(self.health, self.rage)  # inherits from class Character
+        from .status_effect_manager import StatusEffectManager
+        self.status_effects = StatusEffectManager()
 
     def attack(self, enemy, is_enemy=False):
         attacker = "Your enemy" if is_enemy else "You"
         wielder = "their" if is_enemy else "your"
         target = "you" if is_enemy else "your opponent"
-      
         print(f"{attacker} swings {wielder} blade at {target}...")
+        # Check for dodge first
+        if hasattr(enemy, 'status_effects') and enemy.status_effects.apply_dodge_check(enemy):
+            print("💨 Attack dodged!")
+            return
       
         dmg = self.get_attack_dmg(base=25, crit=40, crit_chance=0.33)
-        enemy.health -= dmg
-        if dmg == 40:
+        
+        # Apply status effect damage modifications
+        if hasattr(enemy, 'status_effects'):
+            final_damage, narrative_effects = enemy.status_effects.apply_damage_modification(enemy, dmg, is_enemy)
+            # Show narrative effects before damage
+            for effect_message in narrative_effects:
+                print(effect_message)
+        else:
+            final_damage = dmg
+            
+        enemy.health -= final_damage
+        if final_damage == 40:
             print("CRITICAL HIT")
             rage_gain = 25
         else:
@@ -34,7 +50,7 @@ class Warrior(Character):
         self.rage += rage_gain
         damage_target = "You take" if is_enemy else "Enemy takes"
         resource_text = "Enemy recovers" if is_enemy else "You recover"
-        print(f"{damage_target} take {dmg} damage! {resource_text} {rage_gain} rage.")
+        print(f"{damage_target} {final_damage} damage! {resource_text} {rage_gain} rage.")
         return
     
     def attack_get_result(self, enemy, is_enemy=False):
@@ -72,11 +88,27 @@ class Warrior(Character):
             attacker = "You unleash your" if not is_enemy else "Your enemy unleashes their"
             target = "your opponent" if not is_enemy else "you"
             print(f"{attacker} inner fury opon {target}...")
+            
+            # Check for dodge first
+            if hasattr(enemy, 'status_effects') and enemy.status_effects.apply_dodge_check(enemy):
+                print("💨 Attack dodged!")
+                return
+            
             dmg = self.get_attack_dmg(base=50, crit=75, crit_chance=0.33)
-            enemy.health -= dmg
-            if dmg == 75:
+            
+            # Apply status effect damage modifications
+            if hasattr(enemy, 'status_effects'):
+                final_damage, narrative_effects = enemy.status_effects.apply_damage_modification(enemy, dmg, is_enemy)
+                # Show narrative effects before damage
+                for effect_message in narrative_effects:
+                    print(effect_message)
+            else:
+                final_damage = dmg
+                
+            enemy.health -= final_damage
+            if final_damage == 75:
                 print("CRITICAL HIT")
-            print(f"Does {dmg} damage.")
+            print(f"Does {final_damage} damage.")
         else:
             print("Not enough Rage.")
         return
@@ -86,24 +118,45 @@ class Warrior(Character):
             return True
         return False
     
-    def enter_berserker_rage(self):
+    def enter_berserker_rage(self) -> Dict[str, Any]:
+        """Enter berserker rage mode - take more damage but gain rage"""
+        # No cost - this is a desperate fighting stance, not a resource expenditure
+        
         berserker_effect = StatusEffect(
             effect_type=EffectType.BERSERKER_RAGE,
             duration=5,
-            magnitude=0.25,
+            magnitude=0.25,  # 25% extra damage taken
             maintenance_cost=0,
             resource_type="rage",
             categories=EffectCategory.DAMAGE_AMPLIFICATION | EffectCategory.RAGE_CONVERSION
         )
-
+        self.status_effects.add_effect(berserker_effect)
+    
+        return {
+            'success': True,
+            'effect_applied': 'berserker_rage',
+            'duration': 5,
+            'rage_used': 0
+        }
+    
     def item(self, is_enemy=False):
         if self.item_count > 0:
+            if self.health >= self.max_health:
+                target = "You" if not is_enemy else "Enemy"
+                print(f"{target} already have full health. The potion would be wasted.")
+                return
+                
             target = "You drink" if not is_enemy else "Enemy drinks"
             effect = "You recover" if not is_enemy else "Enemy recovers"
             self.item_count -= 1
             health_recovery = 60
-            self.health += health_recovery
-            print(f"{target} a potion. {effect} {health_recovery} health.")
+            # Cap health at maximum
+            actual_recovery = min(health_recovery, self.max_health - self.health)
+            self.health = min(self.health + health_recovery, self.max_health)
+            print(f"{target} a potion. {effect} {actual_recovery} health.")
+            return
+        else:
+            print("No items left.")
             return
         
 # Helper/Gameloop Methods ----------------------------------------------------------------------------------       
@@ -116,13 +169,22 @@ class Warrior(Character):
         actions = ["attack"]
         if self.can_use_special():
             actions.append("special")
-        if self.item_count > 0:
+        if self.item_count > 0 and self.health < self.max_health:
             actions.append("item")
+        if not self.has_status_effect(EffectType.BERSERKER_RAGE):
+            actions.append("berserker_rage")
         return actions
     
     def validate_action(self, action):
-        available = self.get_available_actions()
-        return action in available
+        if action == "attack":
+            return True
+        elif action == "special":
+            return self.can_use_special()
+        elif action == "item":
+            return self.item_count > 0 and self.health < self.max_health
+        elif action == "berserker_rage":
+            return not self.has_status_effect(EffectType.BERSERKER_RAGE)
+        return False
     
     def get_action_info(self):
         return {
@@ -150,8 +212,17 @@ class Warrior(Character):
                 "damage": "Heals 60 Health",
                 "cost": "1 potion",
                 "effect": f"({self.item_count} remaining)",
-                "available": self.item_count > 0,
-                "requirement": "Requires potion"
+                "available": self.item_count > 0 and self.health < self.max_health,
+                "requirement": "Requires potion & missing health"
+            },
+            "berserker_rage": {
+                "letter": "D",
+                "name": "Berserker Rage",
+                "damage": "+25% incoming damage",
+                "cost": "0 rage",
+                "effect": "Convert extra damage to rage",
+                "available": not self.has_status_effect(EffectType.BERSERKER_RAGE),
+                "requirement": "No active berserker rage"
             }
         }
     
@@ -179,7 +250,7 @@ class Warrior(Character):
                 prompt += f"   └─ {info['requirement']}\n"
             prompt += "\n"
         
-        prompt += "Enter choice (A/B/C): "
+        prompt += "Enter choice (A/B/C/D): "
         return input(prompt).lower()
     
     def print_status(self, is_enemy=False):
@@ -187,3 +258,4 @@ class Warrior(Character):
             print(f"Enemy Health: {self.health} | Enemy Rage: {self.rage}")
         else:  
             print(f"Current Health: {self.health} | Current Rage: {self.rage}")
+        self.print_active_status_effects(is_enemy)
