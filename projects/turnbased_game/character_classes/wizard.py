@@ -108,7 +108,7 @@ class Wizard(Character):
                 
             self.mana -= 25
             target = "you" if not is_enemy else "your enemy"
-            health_recovery = 50
+            health_recovery = 45
             # Cap health at maximum
             actual_recovery = min(health_recovery, self.max_health - self.health)
             self.health = min(self.health + health_recovery, self.max_health)
@@ -122,7 +122,7 @@ class Wizard(Character):
     # STATUS EFFECT
     def cast_magic_bubble(self) -> Dict[str, Any]: 
         """Cast protective magic bubble"""
-        mana_cost = 50
+        mana_cost = 35
         if self.mana < mana_cost:
             return {'success': False, 'reason': 'insufficient_mana'}
         
@@ -131,16 +131,14 @@ class Wizard(Character):
         bubble_effect = StatusEffect(
             effect_type=EffectType.MAGIC_BUBBLE,
             duration=3,
-            magnitude=0.35,  # 35% damage reduction
-            maintenance_cost=25,
+            magnitude=0.40,  # 35% damage reduction
+            maintenance_cost=15,
             resource_type="mana",
             categories=EffectCategory.DAMAGE_REDUCTION | EffectCategory.MANA_DRAIN # "|" operator to 
                                                                                    # combine two enum members into a bitwise 
                                                                                    # OR value that represents both categories at once
         )                                                                          # effect can be checked for both categories
-        
         self.status_effects.add_effect(bubble_effect) # Adds effect to status_effect_manager
-        
         return { # Returns success dictionary with display updates
             'success': True,
             'effect_applied': 'magic_bubble',
@@ -188,7 +186,7 @@ class Wizard(Character):
             actions.append("item")
         if self.can_use_heal():
             actions.append("heal")
-        if self.mana >= 50 and not self.has_status_effect(EffectType.MAGIC_BUBBLE):
+        if self.mana >= 35 and not self.has_status_effect(EffectType.MAGIC_BUBBLE):
             actions.append("magic_bubble")
         return actions
 
@@ -202,7 +200,7 @@ class Wizard(Character):
         elif action == "heal":
             return self.can_use_heal()
         elif action == "magic_bubble":
-            return self.mana >= 50 and not self.has_status_effect(EffectType.MAGIC_BUBBLE)
+            return self.mana >= 35 and not self.has_status_effect(EffectType.MAGIC_BUBBLE)
         return False
     
     def get_action_info(self):
@@ -237,7 +235,7 @@ class Wizard(Character):
             "heal": {
                 "letter": "D",
                 "name": "Healing Light", 
-                "damage": "Restores 50 health",
+                "damage": "Restores 45 health",
                 "cost": "25 mana",
                 "effect": "Divine healing magic",
                 "available": self.mana >= 25 and self.health < self.max_health,
@@ -246,11 +244,11 @@ class Wizard(Character):
             "magic_bubble": {
                 "letter": "E",
                 "name": "Magic Bubble",
-                "damage": "35% damage reduction",
-                "cost": "50 mana + 25/turn",
+                "damage": "40% damage reduction",
+                "cost": "35 mana + 15/turn",
                 "effect": "Protective barrier for 3 turns",
-                "available": self.mana >= 50 and not self.has_status_effect(EffectType.MAGIC_BUBBLE),
-                "requirement": "Requires 50 mana & no active bubble"
+                "available": self.mana >= 35 and not self.has_status_effect(EffectType.MAGIC_BUBBLE),
+                "requirement": "Requires 35 mana & no active bubble"
             }
         }
 
@@ -283,7 +281,7 @@ class Wizard(Character):
 
     def print_status(self, is_enemy=False):
         if is_enemy:
-            print(f"Enemy Health: {self.health} | Enemy Mana: {self.mana}")
+            print(f"   🩸 Enemy Health: {self.health}/{self.max_health} | 🔮 Enemy Mana: {self.mana}/{self.max_mana}")
         else:
-            print(f"Current Health: {self.health} | Current Mana: {self.mana}")
+            print(f"   🩸 Current Health: {self.health}/{self.max_health} | 🔮 Current Mana: {self.mana}/{self.max_mana}")
         self.print_active_status_effects(is_enemy)

@@ -216,7 +216,7 @@ class Warrior(Character):
                 "requirement": "Requires potion & missing health"
             },
             "berserker_rage": {
-                "letter": "D",
+                "letter": "E",
                 "name": "Berserker Rage",
                 "damage": "+25% incoming damage",
                 "cost": "0 rage",
@@ -250,12 +250,12 @@ class Warrior(Character):
                 prompt += f"   └─ {info['requirement']}\n"
             prompt += "\n"
         
-        prompt += "Enter choice (A/B/C/D): "
+        prompt += "Enter choice (A/B/C/D/E): "
         return input(prompt).lower()
     
     def print_status(self, is_enemy=False):
         if is_enemy:
-            print(f"Enemy Health: {self.health} | Enemy Rage: {self.rage}")
+            print(f"   🩸 Enemy Health: {self.health}/{self.max_health} | ⚡ Enemy Rage: {self.rage}")
         else:  
-            print(f"Current Health: {self.health} | Current Rage: {self.rage}")
+            print(f"   🩸 Current Health: {self.health}/{self.max_health} | ⚡ Current Rage: {self.rage}")
         self.print_active_status_effects(is_enemy)

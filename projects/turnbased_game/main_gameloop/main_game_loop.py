@@ -16,27 +16,31 @@ import time
 
 # Choosing player class -------------------------------------------------------------
 def choose_class():
+    print("\n" + "🗡️" + "="*50 + "🗡️")
+    print("           🎭 CHARACTER SELECTION 🎭")
+    print("🗡️" + "="*50 + "🗡️")
+    
     while True:
-
-        char_choice = input("""Choose your class A/B/C: 
-                            A) Warrior : Simple. Heavy. Angry. 
-                            B) Rogue   : Fast. Deadly. Runs on stamina.
-                            C) Wizard  : Wise. Powerful. Everything costs mana. Run out of mana, die.
-                            """).lower()
+        char_choice = input("""\n🎯 Choose your class A/B/C: 
+                            A) ⚔️  Warrior : Simple. Heavy. Angry. 
+                            B) 🗡️  Rogue   : Fast. Deadly. Runs on stamina.
+                            C) 🧙  Wizard  : Wise. Powerful. Everything costs mana. Run out of mana, die.
+                            
+Enter your choice: """).lower()
         if char_choice == "a":
             player = Warrior()
-            print("class chosen: Warrior")
+            print("\n✅ Class chosen: ⚔️ Warrior")
             break
         elif char_choice == "b":
             player = Rogue()
-            print("class chosen: Rogue")
+            print("\n✅ Class chosen: 🗡️ Rogue")
             break
         elif char_choice == "c":
             player = Wizard()
-            print("class chosen: Wizard")
+            print("\n✅ Class chosen: 🧙 Wizard")
             break
         else:
-            print("incorrect input. Please try again.")
+            print("\n❌ Incorrect input. Please try again.")
     return player
 
 # Creating enemy -------------------------------------------------------------------------
@@ -44,11 +48,15 @@ def enemy_class():
     enemy_choice = random.choice(["warrior", "rogue", "wizard"])
     if enemy_choice == "warrior":
         enemy_ai = EnemyAI(Warrior)
+        enemy_icon = "⚔️"
     elif enemy_choice == "rogue":
         enemy_ai = EnemyAI(Rogue)
+        enemy_icon = "🗡️"
     elif enemy_choice == "wizard":
         enemy_ai = EnemyAI(Wizard)
-    print(f"Enemy has chosen a class: {enemy_choice.upper()}")
+        enemy_icon = "🧙"
+    
+    print(f"\n🎯 Enemy has chosen a class: {enemy_icon} {enemy_choice.upper()}")
     return enemy_ai
 # Status Check
 def gl_print_status(player, enemy):
@@ -61,15 +69,15 @@ def process_turn_start(character):
     """Process status effects at turn start"""
     turn_results = character.process_turn_start()
     
-    # Display results to player
+    # Display results to player with better formatting
     if turn_results.get('effects_processed'):
-        print(f"Active effects: {', '.join(turn_results['effects_processed'])}")
+        print(f"✨ Active effects: {', '.join(turn_results['effects_processed'])}")
     
     if turn_results.get('effects_expired'):
-        print(f"Effects expired: {', '.join(turn_results['effects_expired'])}")
+        print(f"⏰ Effects expired: {', '.join(turn_results['effects_expired'])}")
     
     if turn_results.get('maintenance_failures'):
-        print(f"Effects lost due to insufficient resources!")
+        print(f"🔋 Effects lost due to insufficient resources!")
 
 # In attack processing - add dodge and damage modification
 def process_attack(self, attacker, target):
@@ -119,23 +127,32 @@ if __name__ == "__main__":
 
     # Main game loop
     while player.health > 0 and enemy.character.health > 0:
+        print("\n" + "🔄" + "="*48 + "🔄")
+        print("           🌟 NEW ROUND BEGINS 🌟")
+        print("🔄" + "="*48 + "🔄")
+        
         # Process status effects at the start of the round
         process_turn_start(player)
         process_turn_start(enemy.character)
+        
         # Player's turn
-        gl_print_status(player, enemy)
-        # check_status_effect()
         player.take_turn(enemy.character)
-        # if player.take_turn():
-        #     turn_counter -= 1
+        
         time.sleep(1)
         if enemy.character.health <= 0:
-            print("====Your opponent has been slain. You are victorious!!====")
+            print("\n" + "🎉" + "="*40 + "🎉")
+            print("🏆 Your opponent has been slain. You are victorious! 🏆")
+            print("🎉" + "="*40 + "🎉")
             break
+            
         # Enemy's turn (random action)
-        print("\n Enemy's turn!")
+        print("\n" + "⚔️" + "="*20 + " ENEMY TURN " + "="*20 + "⚔️")
         enemy.take_turn(player)
+        
         if player.health <= 0:
-            print("You have been slain.")
+            print("\n" + "💀" + "="*30 + "💀")
+            print("☠️  You have been slain. ☠️")
+            print("💀" + "="*30 + "💀")
             break
-    print("=== Game Over! ===")
+            
+    print("\n" + "🎮" + "="*20 + " GAME OVER " + "="*20 + "🎮")

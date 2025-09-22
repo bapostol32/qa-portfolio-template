@@ -246,7 +246,7 @@ class Rogue(Character):
     
     def print_status(self, is_enemy=False):
         if is_enemy:
-            print(f"Enemy Health: {self.health} | Enemy Stamina: {self.stamina}")
+            print(f"   🩸 Enemy Health: {self.health}/{self.max_health} | 💨 Enemy Stamina: {self.stamina}/{self.max_stamina}")
         else:
-            print(f"Current Health: {self.health} | Current Stamina: {self.stamina}")
+            print(f"   🩸 Current Health: {self.health}/{self.max_health} | 💨 Current Stamina: {self.stamina}/{self.max_stamina}")
         self.print_active_status_effects(is_enemy)

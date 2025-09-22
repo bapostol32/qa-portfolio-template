@@ -111,19 +111,29 @@ class Character:
             self.attack(enemy)
 
     def take_turn(self, enemy):
-        print("\n --- Your Turn! ---")
+        print("\n" + "="*50)
+        print("🎯 YOUR TURN!")
+        print("="*50)
         time.sleep(1)
+        
+        print("\n📊 CURRENT STATUS:")
         self.print_status()
+        self.print_active_status_effects()
+        
+        print("\n🏹 ENEMY STATUS:")
         enemy.print_status(is_enemy=True)
+        enemy.print_active_status_effects(is_enemy=True)
         
         # Import here to avoid circular imports
         from .wizard import Wizard
         if isinstance(self, Wizard):
             if self.mana < 10 and self.item_count == 0:
                 self.health = 0
-                print("The wizard drops their staff and falls to the ground. \n" 
-                      "They have ran out of mana, and died.")
+                print("\n💀 The wizard drops their staff and falls to the ground.")
+                print("   They have ran out of mana, and died.")
                 return
+                
+        print("\n" + "-"*30)
         while True:
             action_choice = self.action_prompt()
             time.sleep(1)
@@ -132,7 +142,19 @@ class Character:
                 self.execute_action(mapped_action, enemy)
                 break
             else:
-                print("Invalid choice. Please try again.")
+                print("\n❌ Invalid choice. Please try again.")
+                print("\n" + "="*40)
+                print("📋 STATUS REFRESH")
+                print("="*40)
+                
+                print("\n📊 YOUR STATUS:")
+                self.print_status()
+                self.print_active_status_effects()
+                
+                print("\n🏹 ENEMY STATUS:")
+                enemy.print_status(is_enemy=True)
+                enemy.print_active_status_effects(is_enemy=True)
+                print("\n" + "-"*30)
         time.sleep(1)
 
     def process_turn_start(self) -> Dict[str, Any]:
@@ -156,7 +178,7 @@ class Character:
         if not hasattr(self, 'status_effects') or not self.status_effects.active_effects:
             return  # No status effects to display
         
-        prefix = "Enemy" if is_enemy else "You"
+        prefix = "   🌟 Enemy" if is_enemy else "   🌟 You"
         effects_info = []
         
         for effect in self.status_effects.active_effects:
